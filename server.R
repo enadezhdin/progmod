@@ -67,7 +67,7 @@ as.data.frame(xtabs(~data[,which(colnames(data)==a)]+data[,which(colnames(data)=
 colnames(A)<-c("Diagnosis","Gene","Percentage"); ggplot(A,aes(x=Diagnosis,y=Percentage))+geom_col(aes(fill=Gene))+theme(text = element_text(size=20),panel.background = element_blank(),axis.line = element_line(colour = "black"))+ylab("Percentage of patients with mutation(s)")
 }
 
-
+#need to figure out what is this???????????
 observe({
 datasetInput<-reactive({switch(input$dataset,
            "Essential Thrombocytosis (n=1244)" = MPNinput[which(MPNinput$ET==1),],
@@ -75,13 +75,22 @@ datasetInput<-reactive({switch(input$dataset,
            "Primary/Secondary Myelofibrosis (n=276)" = MPNinput[which(MPNinput$MF==1),],
            "Other MPN (n=43)" = MPNinput[which(MPNinput$ET==0&MPNinput$PV==0&MPNinput$MF==0),])})
 #Make patient list specific to chosen diagnosis:
-updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())])
+updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())]) #see line 18 in UI
 PID<-reactive({input$patient})
 
 #Display patient characteristics:
-output$UPN <- renderText({
-paste("Patient Selected:", as.character(PID()))
+
+#original code:
+# output$UPN <- renderText({
+# paste("Patient Selected:", as.character(PID()))
+# })
+#replaced with:
+UPN_react <<- reactive({paste("Patient Selected:", as.character(PID()))
 })
+
+output$UPN <- renderText({UPN_react()})
+###end of replacement
+
 
 PNO<-reactive({
 if(length(which(datasetInput()$id==as.character(PID())))==0){1
@@ -99,10 +108,28 @@ paste0("Mutations detected: ",toString(
 variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
   }
   })
-
+#### Inserted code below
+  
+Mut_desc_react <<- reactive({if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
+  h4("Patient Description")
+  paste0("Mutations detected: Nil")
+}else{
+  h4("Patient Description")
+  paste0("Mutations detected: ",toString(
+    variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
+}})
+###########
+  
+  
 output$Demographics <- renderText({
 paste("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender:",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l):", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l):", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")
 })
+
+#### code inserted
+
+Demogr_react <<- reactive({paste("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender:",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l):", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l):", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")})
+#does not work like that you can not use "reactive(render...)"
+###############
 
 output$OutcomeMF<-renderText({
 if(datasetInput()$MF[PNO()]!=1){
@@ -162,8 +189,57 @@ values$val$PriorThrom<-as.numeric(input$PriorThrom)
 values$val$CALR1<-as.numeric(input$CALR)*(2-as.numeric(input$CALR))
 values$val$CALR2<-(as.numeric(input$CALR)/2)*(as.numeric(input$CALR)-1)
 values$val$JAK2<-as.numeric(input$JAK2)
-values$val$JAK2e12<-as.numeric(input$JAK2e12)values$val$MPL<-as.numeric(input$MPL)values$val$TET2<-as.numeric(input$TET2)values$val$ASXL1<-as.numeric(input$ASXL1)values$val$DNMT3A<-as.numeric(input$DNMT3A)values$val$PPM1D<-as.numeric(input$PPM1D)values$val$EZH2<-as.numeric(input$EZH2)values$val$NF1<-as.numeric(input$NF1)values$val$NFE2<-as.numeric(input$NFE2)values$val$SF3B1<-as.numeric(input$SF3B1)values$val$SRSF2<-as.numeric(input$SRSF2)values$val$TP53<-as.numeric(input$TP53)values$val$U2AF1<-as.numeric(input$U2AF1)values$val$CBL<-as.numeric(input$CBL)values$val$MLL3<-as.numeric(input$MLL3)values$val$ZRSR2<-as.numeric(input$ZRSR2)values$val$GNAS<-as.numeric(input$GNAS)values$val$KRAS<-as.numeric(input$KRAS)values$val$SH2B3<-as.numeric(input$SH2B3)values$val$IDH2<-as.numeric(input$IDH2)values$val$PTPN11<-as.numeric(input$PTPN11)values$val$KIT<-as.numeric(input$KIT)values$val$SETBP1<-as.numeric(input$SETBP1)values$val$BCOR<-as.numeric(input$BCOR)values$val$NRAS<-as.numeric(input$NRAS)values$val$CUX1<-as.numeric(input$CUX1)values$val$STAG2<-as.numeric(input$STAG2)values$val$IDH1<-as.numeric(input$IDH1)values$val$FLT3<-as.numeric(input$FLT3)values$val$RUNX1<-as.numeric(input$RUNX1)values$val$PHF6<-as.numeric(input$PHF6)values$val$GATA2<-as.numeric(input$GATA2)values$val$MBD1<-as.numeric(input$MBD1)
-#values$val$RB1<-as.numeric(input$RB1)values$val$GNB1<-as.numeric(input$GNB1)values$val$C1p<-as.numeric(input$C1p)values$val$C1q<-as.numeric(input$C1q)values$val$C4<-as.numeric(input$C4)values$val$C5<-as.numeric(input$C5)values$val$C7<-as.numeric(input$C7)values$val$C8<-as.numeric(input$C8)values$val$C9U<-as.numeric(input$C9U)values$val$C9g<-as.numeric(input$C9g)values$val$C11<-as.numeric(input$C11)values$val$C12<-as.numeric(input$C12)values$val$C13<-as.numeric(input$C13)values$val$C14<-as.numeric(input$C14)values$val$C17<-as.numeric(input$C17)values$val$C18<-as.numeric(input$C18)values$val$C19<-as.numeric(input$C19)values$val$C20<-as.numeric(input$C20)
+values$val$JAK2e12<-as.numeric(input$JAK2e12)
+values$val$MPL<-as.numeric(input$MPL)
+values$val$TET2<-as.numeric(input$TET2)
+values$val$ASXL1<-as.numeric(input$ASXL1)
+values$val$DNMT3A<-as.numeric(input$DNMT3A)
+values$val$PPM1D<-as.numeric(input$PPM1D)
+values$val$EZH2<-as.numeric(input$EZH2)
+values$val$NF1<-as.numeric(input$NF1)
+values$val$NFE2<-as.numeric(input$NFE2)
+values$val$SF3B1<-as.numeric(input$SF3B1)
+values$val$SRSF2<-as.numeric(input$SRSF2)
+values$val$TP53<-as.numeric(input$TP53)
+values$val$U2AF1<-as.numeric(input$U2AF1)
+values$val$CBL<-as.numeric(input$CBL)
+values$val$MLL3<-as.numeric(input$MLL3)
+values$val$ZRSR2<-as.numeric(input$ZRSR2)
+values$val$GNAS<-as.numeric(input$GNAS)
+values$val$KRAS<-as.numeric(input$KRAS)
+values$val$SH2B3<-as.numeric(input$SH2B3)
+values$val$IDH2<-as.numeric(input$IDH2)
+values$val$PTPN11<-as.numeric(input$PTPN11)
+values$val$KIT<-as.numeric(input$KIT)
+values$val$SETBP1<-as.numeric(input$SETBP1)
+values$val$BCOR<-as.numeric(input$BCOR)
+values$val$NRAS<-as.numeric(input$NRAS)
+values$val$CUX1<-as.numeric(input$CUX1)
+values$val$STAG2<-as.numeric(input$STAG2)
+values$val$IDH1<-as.numeric(input$IDH1)
+values$val$FLT3<-as.numeric(input$FLT3)
+values$val$RUNX1<-as.numeric(input$RUNX1)
+values$val$PHF6<-as.numeric(input$PHF6)
+values$val$GATA2<-as.numeric(input$GATA2)
+values$val$MBD1<-as.numeric(input$MBD1)
+#values$val$RB1<-as.numeric(input$RB1)
+values$val$GNB1<-as.numeric(input$GNB1)
+values$val$C1p<-as.numeric(input$C1p)
+values$val$C1q<-as.numeric(input$C1q)
+values$val$C4<-as.numeric(input$C4)
+values$val$C5<-as.numeric(input$C5)
+values$val$C7<-as.numeric(input$C7)
+values$val$C8<-as.numeric(input$C8)
+values$val$C9U<-as.numeric(input$C9U)
+values$val$C9g<-as.numeric(input$C9g)
+values$val$C11<-as.numeric(input$C11)
+values$val$C12<-as.numeric(input$C12)
+values$val$C13<-as.numeric(input$C13)
+values$val$C14<-as.numeric(input$C14)
+values$val$C17<-as.numeric(input$C17)
+values$val$C18<-as.numeric(input$C18)
+values$val$C19<-as.numeric(input$C19)
+values$val$C20<-as.numeric(input$C20)
 }else if(input$newdata=="Input data from file"){
 inFile <- input$file1
 filedata<-read.csv(inFile$datapath, header=TRUE, sep=",")
@@ -175,7 +251,7 @@ values$val$WCC<-filedata$WCC[1]/100
 values$val$Pl<-filedata$Pl[1]/1000
 }
 })
-
+### the key for sediment plot is below!!!!!!
 observeEvent(input$update,{
 output$medianEFS<-
 output$msplot<-
@@ -184,6 +260,11 @@ newdataplot(values$val)
 },height=function(){400},width=function(){600}
 )})
 
+
+#####Some random test
+
+plot_data <<- reactive(values$val)
+####################
 observe(if(input$newdata=="Input new patient data"){ updateNumericInput(session, "patient", value=dput(datasetInput()$id[1]))
 })
 
@@ -193,7 +274,7 @@ output$downloadData <- downloadHandler(
       write.csv(datasetInput()[1,1:65], file,row.names=FALSE)
     })
 
-output$comboplot<-renderPlot({par(bty="L", xaxs="i",yaxs="i")
+output$comboplot<-renderPlot({par(bty="L", xaxs="i",yaxs="i") #this is plot on second tab (2 genes)
 combo(TGSgenes,input$Gene1,input$Gene2)
 },height=function(){400},width=function(){600}
 )
@@ -201,4 +282,31 @@ combo(TGSgenes,input$Gene1,input$Gene2)
 
 })
 #observe({session$sendCustomMessage(type = 'testmessage', message = "There are no more patients with this diagnosis.")})
-}
+
+# code below added on 23.03.2020:
+#tmp_val_UPN <- reactive({output$UPN}) #ading tmp variable to get UPN value
+
+#output$tmp_val <- renderPrint(tmp_val_UPN())
+#print(tmp_val_UPN)
+
+    output$report <- downloadHandler(
+      filename = "MPN_report.pdf",  #just changed from HTML
+      
+      content = function(file) {
+        tempReport <- file.path(tempdir(), "MPN_report.Rmd")
+        tempImage <- file.path(tempdir(), "sed_plot_key.png")
+        file.copy("MPN_report.Rmd", tempReport, overwrite = TRUE)
+        file.copy("sed_plot_key.png", tempImage)
+        
+        params <- list(n = UPN_react(), m = Mut_desc_react(), d = Demogr_react(), plt = plot_data()) 
+    
+        rmarkdown::render(tempReport, output_file = file,
+                          params = params,
+                          envir = new.env(parent = globalenv())
+                           )
+        
+                               }
+                                    )
+
+
+} # this is closing for SERVER function

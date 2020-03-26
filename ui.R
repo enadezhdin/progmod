@@ -315,10 +315,11 @@ h5("Patient Description",align="centre"),
       textOutput("MutationDesc"),
       textOutput("Demographics")
 )),
+
 fluidRow(     
-column(9,style="padding:0px",plotOutput("msplot")),
-column(3,style="padding:0px",
-img(src="key2.tiff", height = 300, width = 135))
+  column(9,style="padding:0px",plotOutput("msplot")),
+  column(3,style="padding:0px",
+         img(src="sed_plot_key.png", height = 300, width = 135))
 ),
 
 conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
@@ -326,7 +327,11 @@ wellPanel(
 h5("Patient Outcomes",align="centre"),
      textOutput("OutcomeMF"),
      textOutput("Outcome")
-))
+)),
+
+downloadButton("report", "Generate report"), #Inserted button for report generation
+
+#textOutput("tmp_val")
 ))))
 )
 
