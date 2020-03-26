@@ -1,5 +1,5 @@
 ---
-title: "MPN prediction model report"
+title: ""
 output: html_document
 params:
   upn: NA
@@ -13,6 +13,7 @@ params:
 ![](sanger_logo.png)
 ![](line.png)
 
+## MPN prediction model report
 
 ### Report created on `r Sys.time()`
 
@@ -40,9 +41,9 @@ newdataplot(params$plt)
 
 ### Patient Outcomes:
 
-* #### `r params$MEFS`
+#### `r params$MEFS`
 
-* #### `r params$out_mf`
-* #### `r params$out_m`
+#### `r params$out_mf`
+#### `r params$out_m`
 
 

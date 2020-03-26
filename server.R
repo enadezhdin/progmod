@@ -124,12 +124,12 @@ Mut_desc_react <<- reactive({if(length(which(datasetInput()[PNO(),1:55,drop=FALS
   
   
 output$Demographics <- renderText({
-paste("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender:",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l):", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l):", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")
+paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")
 })
 
 #### code inserted
 
-Demogr_react <<- reactive({paste("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender:",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l):", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l):", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")})
+Demogr_react <<- reactive({paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0))})
 
 ###############
 
@@ -314,7 +314,7 @@ combo(TGSgenes,input$Gene1,input$Gene2)
 #print(tmp_val_UPN)
 
     output$report <- downloadHandler(
-      filename = "MPN_report.html",  #just changed from HTML need to add additional images
+      filename = "MPN_report.html",  #change 1 here pdf/html
       
       content = function(file) {
         tempReport <- file.path(tempdir(), "MPN_report.Rmd")
