@@ -1,0 +1,43 @@
+---
+title: "MPN prediction model report"
+output: html_document
+params:
+  n: NA
+  m: NA
+  d: NA
+  plt: NA
+---
+
+# This is *automatically* generated report based on input data
+
+### Report created on `r Sys.time()`
+
+### Software ver. # 0.0.1
+
+## Patient description:
+
+* #### `r params$n`
+
+* #### `r params$m`
+
+* #### `r params$d`
+
+
+```{r echo=FALSE}
+
+
+newdataplot(params$plt)
+
+```
+
+![Legend key](sed_plot_key.png) <!-- need to figure out how to move it to the left! -->
+
+
+
+
+```{r}
+# The `params` object is available in the document.
+params$n
+```
+
+
