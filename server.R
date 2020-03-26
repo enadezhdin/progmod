@@ -50,6 +50,7 @@ text(x=12.5*365/25,y=0.05,labels=paste0("10yr AML risk: ",round(multistate[10*36
 text(x=20*365/25,y=0.05,labels=paste0("20yr AML risk: ",round(multistate[20*365/25,7,1],3)*100,"%"))
 text(x=12.5*365/25,y=0.5,labels=MEFS)
 }
+mefs_react <<- reactive(MEFS)
 }
 
 combo<-function(data,a,b)
@@ -284,7 +285,7 @@ newdataplot(values$val)
 
 
 #####Some random test
-mefs_react <<- reactive(MEFS)
+
 
 plot_data <<- reactive(values$val) #added MEFS here
 ####################
@@ -321,7 +322,7 @@ combo(TGSgenes,input$Gene1,input$Gene2)
         file.copy("MPN_report.Rmd", tempReport, overwrite = TRUE)
         file.copy("sed_plot_key.png", tempImage)
         
-        params <- list(upn = UPN_react(), mut = Mut_desc_react(), dem = Demogr_react(), plt = plot_data(), out_mf = OutcomeMF_react(), out_m = Outcome_react()) 
+        params <- list(upn = UPN_react(), mut = Mut_desc_react(), dem = Demogr_react(), plt = plot_data(), out_mf = OutcomeMF_react(), out_m = Outcome_react(), MEFS = mefs_react()) 
     
         rmarkdown::render(tempReport, output_file = file,
                           params = params,

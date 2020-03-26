@@ -8,6 +8,7 @@ params:
   plt: NA
   out_mf: NA
   out_m: NA
+  MEFS: NA
 ---
 ![](sanger_logo.png)
 ![](line.png)
@@ -39,7 +40,9 @@ newdataplot(params$plt)
 
 ### Patient Outcomes:
 
-#### `r params$out_mf`
-#### `r params$out_m`
+* #### `r params$MEFS`
+
+* #### `r params$out_mf`
+* #### `r params$out_m`
 
 
