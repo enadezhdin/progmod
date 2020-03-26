@@ -290,7 +290,7 @@ combo(TGSgenes,input$Gene1,input$Gene2)
 #print(tmp_val_UPN)
 
     output$report <- downloadHandler(
-      filename = "MPN_report.pdf",  #just changed from HTML
+      filename = "MPN_report.html",  #just changed from HTML need to add additional images
       
       content = function(file) {
         tempReport <- file.path(tempdir(), "MPN_report.Rmd")

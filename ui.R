@@ -331,7 +331,7 @@ h5("Patient Outcomes",align="centre"),
 
 downloadButton("report", "Generate report"), #Inserted button for report generation
 
-#textOutput("tmp_val")
+
 ))))
 )
 
