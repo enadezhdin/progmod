@@ -4,6 +4,7 @@ library(RColorBrewer)
 library(CoxHD)
 library(Rcpp)
 library(ggplot2)
+library(png)
 load("www/MPNmultistate.RData", envir=globalenv())
 
 function(input, output,clientData,session) {
@@ -128,7 +129,7 @@ paste("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender:",datasetInput()$G
 #### code inserted
 
 Demogr_react <<- reactive({paste("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender:",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l):", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l):", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")})
-#does not work like that you can not use "reactive(render...)"
+
 ###############
 
 output$OutcomeMF<-renderText({
@@ -149,6 +150,27 @@ paste("Patient did not develop AML during follow-up time, but died within",ceili
 paste("AML transformation or death did not occur during follow-up")
 }
 })
+
+##### Code inserted below
+
+Outcome_react <<- reactive({
+  if(datasetInput()$AMLTC[PNO()]==1){
+    paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
+  }else if(datasetInput()$DeathC[PNO()]==1){
+    paste("Patient did not develop AML during follow-up time, but died within",ceiling(datasetInput()$Death[PNO()]/365.25)," year(s) of diagnosis.")
+  }else{
+    paste("AML transformation or death did not occur during follow-up")
+  }
+})
+
+OutcomeMF_react <<- reactive({
+  if(datasetInput()$MF[PNO()]!=1){
+    if(datasetInput()$MFTC[PNO()]==1){
+      paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$MFT[PNO()]/365.25)," year(s) of diagnosis.")
+    }else{paste("")}
+  }else{paste("")}
+})
+
 
 output$Gene1stat1<-renderText({
 paste0("Present in ",round(sum(TGSgenes[,which(colnames(TGSgenes)==input$Gene1)])*100/2041,1),"% of cohort.") })
@@ -262,8 +284,9 @@ newdataplot(values$val)
 
 
 #####Some random test
+mefs_react <<- reactive(MEFS)
 
-plot_data <<- reactive(values$val)
+plot_data <<- reactive(values$val) #added MEFS here
 ####################
 observe(if(input$newdata=="Input new patient data"){ updateNumericInput(session, "patient", value=dput(datasetInput()$id[1]))
 })
@@ -298,7 +321,7 @@ combo(TGSgenes,input$Gene1,input$Gene2)
         file.copy("MPN_report.Rmd", tempReport, overwrite = TRUE)
         file.copy("sed_plot_key.png", tempImage)
         
-        params <- list(n = UPN_react(), m = Mut_desc_react(), d = Demogr_react(), plt = plot_data()) 
+        params <- list(upn = UPN_react(), mut = Mut_desc_react(), dem = Demogr_react(), plt = plot_data(), out_mf = OutcomeMF_react(), out_m = Outcome_react()) 
     
         rmarkdown::render(tempReport, output_file = file,
                           params = params,

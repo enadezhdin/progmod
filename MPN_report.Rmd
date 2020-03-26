@@ -2,36 +2,44 @@
 title: "MPN prediction model report"
 output: html_document
 params:
-  n: NA
-  m: NA
-  d: NA
+  upn: NA
+  mut: NA
+  dem: NA
   plt: NA
+  out_mf: NA
+  out_m: NA
 ---
+![](sanger_logo.png)
+![](line.png)
 
-# This is *automatically* generated report based on input data
 
 ### Report created on `r Sys.time()`
 
-### Software ver. # 0.0.1
+#### Software ver. # 0.0.1
 
 ## Patient description:
 
-* #### `r params$n`
+* #### `r params$upn`
 
-* #### `r params$m`
+* #### `r params$mut`
 
-* #### `r params$d`
+* #### `r params$dem`
 
 
 ```{r echo=FALSE}
-
-
+#library(png)
+img <- readPNG("sed_plot_key.png")
+#par(mfrow=c(1,2))
+layout(matrix(c(1,1,1,2), 1, 2))
 newdataplot(params$plt)
+#grid::grid.raster(img)
 
 ```
-
 ![Legend key](sed_plot_key.png) <!-- need to figure out how to move it to the left! -->
 
+### Patient Outcomes:
 
+#### `r params$out_mf`
+#### `r params$out_m`
 
 
