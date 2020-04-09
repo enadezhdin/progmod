@@ -12,6 +12,7 @@ function(input, output,clientData,session) {
 newdataplot<-function(newdata,ET=newdata$ET,PV=newdata$PV,MF=newdata$MF){
 newdata$MF==MF;newdata$PV==PV;newdata$ET==ET; lab=c(0,5,10,15,20,25)
 multistate<-MultiRFX5(cp_fit, aml_fit, cp_to_mf_fit, mf_fit, aml_fit, newdata, x=365*25)
+
 if (MF==0) {
 MEFS<-NULL
 if(length(which(rowSums(multistate[,1:5,1])>0.5))==0){
@@ -50,7 +51,7 @@ text(x=12.5*365/25,y=0.05,labels=paste0("10yr AML risk: ",round(multistate[10*36
 text(x=20*365/25,y=0.05,labels=paste0("20yr AML risk: ",round(multistate[20*365/25,7,1],3)*100,"%"))
 text(x=12.5*365/25,y=0.5,labels=MEFS)
 }
-mefs_react <<- reactive(MEFS)
+mefs_react <<- reactive(MEFS) # retrieveing MEFS value for the report output
 }
 
 combo<-function(data,a,b)
@@ -69,29 +70,28 @@ as.data.frame(xtabs(~data[,which(colnames(data)==a)]+data[,which(colnames(data)=
 colnames(A)<-c("Diagnosis","Gene","Percentage"); ggplot(A,aes(x=Diagnosis,y=Percentage))+geom_col(aes(fill=Gene))+theme(text = element_text(size=20),panel.background = element_blank(),axis.line = element_line(colour = "black"))+ylab("Percentage of patients with mutation(s)")
 }
 
-#need to figure out what is this???????????
+
 observe({
-datasetInput<-reactive({switch(input$dataset,
+datasetInput<-reactive({switch(input$dataset, #conceptually datasetInput==MPNinput
            "Essential Thrombocytosis (n=1244)" = MPNinput[which(MPNinput$ET==1),],
            "Polycythemia Vera (n=312)" = MPNinput[which(MPNinput$PV==1),],
            "Primary/Secondary Myelofibrosis (n=276)" = MPNinput[which(MPNinput$MF==1),],
            "Other MPN (n=43)" = MPNinput[which(MPNinput$ET==0&MPNinput$PV==0&MPNinput$MF==0),])})
 #Make patient list specific to chosen diagnosis:
-updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())]) #see line 18 in UI
+updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())])
 PID<-reactive({input$patient})
 
 #Display patient characteristics:
 
-#original code:
-# output$UPN <- renderText({
-# paste("Patient Selected:", as.character(PID()))
-# })
-#replaced with:
-UPN_react <<- reactive({paste("Patient Selected:", as.character(PID()))
+
+output$UPN <- renderText({
+paste("Patient Selected:", as.character(PID()))
 })
 
-output$UPN <- renderText({UPN_react()})
-###end of replacement
+# obtaining PID value for the report generation
+UPN_react <- reactive({paste(as.character(PID())) #removed "Patient Selected:"
+})
+
 
 
 PNO<-reactive({
@@ -110,9 +110,9 @@ paste0("Mutations detected: ",toString(
 variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
   }
   })
-#### Inserted code below
   
-Mut_desc_react <<- reactive({if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
+#### Mutations description react function for report
+Mut_desc_react <- reactive({if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
   h4("Patient Description")
   paste0("Mutations detected: Nil")
 }else{
@@ -127,11 +127,9 @@ output$Demographics <- renderText({
 paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")
 })
 
-#### code inserted
+#### demograph reactive function for report
+Demogr_react <- reactive({paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0))})
 
-Demogr_react <<- reactive({paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0))})
-
-###############
 
 output$OutcomeMF<-renderText({
 if(datasetInput()$MF[PNO()]!=1){
@@ -152,9 +150,9 @@ paste("AML transformation or death did not occur during follow-up")
 }
 })
 
-##### Code inserted below
+##### Outcome/outcomeMF react functions for report
 
-Outcome_react <<- reactive({
+Outcome_react <- reactive({
   if(datasetInput()$AMLTC[PNO()]==1){
     paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
   }else if(datasetInput()$DeathC[PNO()]==1){
@@ -164,13 +162,15 @@ Outcome_react <<- reactive({
   }
 })
 
-OutcomeMF_react <<- reactive({
+OutcomeMF_react <- reactive({
   if(datasetInput()$MF[PNO()]!=1){
     if(datasetInput()$MFTC[PNO()]==1){
       paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$MFT[PNO()]/365.25)," year(s) of diagnosis.")
     }else{paste("")}
   }else{paste("")}
 })
+
+##################
 
 
 output$Gene1stat1<-renderText({
@@ -200,8 +200,8 @@ paste0("Mean number of mutations in patients with ",input$Gene2,": ",round(mean(
 
 values<-reactiveValues(val=NULL)
 observeEvent(input$update,{
-values$val<-datasetInput()[PNO(),1:71]
-if(input$newdata=="Input new patient data"){
+values$val<-datasetInput()[PNO(),1:71] 
+if(input$newdata=="Input new patient data"){ 
 values$val$Age<-input$Age/10
 values$val$Hb<-input$Hb/100
 values$val$WCC<-input$WCC/100
@@ -266,7 +266,7 @@ values$val$C20<-as.numeric(input$C20)
 }else if(input$newdata=="Input data from file"){
 inFile <- input$file1
 filedata<-read.csv(inFile$datapath, header=TRUE, sep=",")
-values$val[1:55]<-filedata[1,1:55]
+values$val[1:55]<-filedata[1,1:55] #values from csv 1-55 are values for set of genes
 values$val$Age<-filedata$Age[1]/10
 values$val$Sex<-as.numeric(filedata$Sex[1])
 values$val$Hb<-filedata$Hb[1]/100
@@ -274,21 +274,55 @@ values$val$WCC<-filedata$WCC[1]/100
 values$val$Pl<-filedata$Pl[1]/1000
 }
 })
-### the key for sediment plot is below!!!!!!
+
+#create gender and genes lists for report
+
+Gender_list <- c("F", "M")
+Genes_list <- colnames(MPNinput)[1:55]
+
+###### demogrphic and mutation list react functions to report from values 
+
+reactive_DEMOGR <- reactive({paste0("Age: ",round(values$val$Age*10),". Gender: ",Gender_list[values$val$Sex], ". Haemoglobin (g/l): ",values$val$Hb*100, ". White cell count (x10^9/l): ", values$val$WCC*100,". Platelet count (x10^9/l): ", values$val$Pl*1000)})
+reactive_MUTLIST <- reactive(Genes_list[which (values$val[1, c(1:55),drop=FALSE]!=0)])
+
+### define report format
+reactive_report_format <- reactive(input$report_format)
+
+
+
 observeEvent(input$update,{
+  
 output$medianEFS<-
 output$msplot<-
 renderPlot({par(bty="L", xaxs="i",yaxs="i", mar=c(5,5,1,1))
 newdataplot(values$val)
 },height=function(){400},width=function(){600}
-)})
+)
+
+}
+)
+
+######  generate diagram image for pptx report. Output plot is joined with the fig legend
+observeEvent(input$update, {
+ 
+
+    png(filename = file.path(tempdir(), "patient_diagram_output.png"), width = 900, height = 640, units = "px") # inserted here on 03.04.2020 
+    layout(matrix(c(1,2), 1, 2), widths=c(4, 1), heights=c(1,1))
+    newdataplot(values$val)
+    par(mar=c(3,0,3,1))
+    plot(c(100, 300), c(100, 450), type = "n", xlab = "", ylab = "", bty="n", fg = "white", col.axis="white")
+    rasterImage(readPNG("sed_plot_key.png"), 100, 100, 300, 300)
+    dev.off()
+
+                  
+
+})
 
 
-#####Some random test
+### patient plot to report
+plot_data <<- reactive(values$val)
 
 
-plot_data <<- reactive(values$val) #added MEFS here
-####################
 observe(if(input$newdata=="Input new patient data"){ updateNumericInput(session, "patient", value=dput(datasetInput()$id[1]))
 })
 
@@ -304,33 +338,64 @@ combo(TGSgenes,input$Gene1,input$Gene2)
 )
 
 
-})
-#observe({session$sendCustomMessage(type = 'testmessage', message = "There are no more patients with this diagnosis.")})
+####report format selection and processing part
 
-# code below added on 23.03.2020:
-#tmp_val_UPN <- reactive({output$UPN}) #ading tmp variable to get UPN value
-
-#output$tmp_val <- renderPrint(tmp_val_UPN())
-#print(tmp_val_UPN)
-
-    output$report <- downloadHandler(
-      filename = "MPN_report.html",  #change 1 here pdf/html
+if (input$report_format=='html_document') {
+  output$report <- downloadHandler (
+    filename = "MPN_report.html",
+    content = function(file) {
+      tempReport <- file.path(tempdir(), "MPN_report.Rmd")
+      tempImage_plot_key <- file.path(tempdir(), "sed_plot_key.png")
+      tempImage_logo <- file.path(tempdir(), "sanger_logo.png")
+      tempImage_line <- file.path(tempdir(), "line.png")
+      file.copy("MPN_report.Rmd", tempReport, overwrite = TRUE)
+      file.copy("sed_plot_key.png", tempImage_plot_key)
+      file.copy("sanger_logo.png", tempImage_logo)
+      file.copy("line.png", tempImage_line)
       
-      content = function(file) {
-        tempReport <- file.path(tempdir(), "MPN_report.Rmd")
-        tempImage <- file.path(tempdir(), "sed_plot_key.png")
-        file.copy("MPN_report.Rmd", tempReport, overwrite = TRUE)
-        file.copy("sed_plot_key.png", tempImage)
-        
-        params <- list(upn = UPN_react(), mut = Mut_desc_react(), dem = Demogr_react(), plt = plot_data(), out_mf = OutcomeMF_react(), out_m = Outcome_react(), MEFS = mefs_react()) 
+      params <- list(upn = UPN_react(), mut = reactive_MUTLIST(), dem = reactive_DEMOGR(), plt = plot_data(), MEFS = mefs_react())# out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
+      #ATTN! if input from user data the value of upn passed to report is "", not NA!
+      #below original string with params
+      #params <- list(upn = UPN_react(), mut = Mut_desc_react(), dem = Demogr_react(), plt = plot_data(), out_mf = OutcomeMF_react(), out_m = Outcome_react(), MEFS = mefs_react()) 
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params, output_format = input$report_format,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+}else if (input$report_format=='powerpoint_presentation') {
+  
+  output$report <- downloadHandler (
+    filename = "MPN_report.pptx",
+    content = function(file) {
+      tempReport <- file.path(tempdir(), "MPN_report_pptx.Rmd")
+      tempImage_plot_key <- file.path(tempdir(), "sed_plot_key.png")
+      tempImage_logo <- file.path(tempdir(), "sanger_logo.png")
+      tempImage_line <- file.path(tempdir(), "line.png")
+      tempReport_template <- file.path(tempdir(), "MPN_report.potx")
+      file.copy("MPN_report_pptx.Rmd", tempReport, overwrite = TRUE)
+      file.copy("sed_plot_key.png", tempImage_plot_key)
+      file.copy("sanger_logo.png", tempImage_logo)
+      file.copy("line.png", tempImage_line)
+      file.copy("MPN_report.potx", tempReport_template)
+      
+      params <- list(upn = UPN_react(), mut = reactive_MUTLIST(), dem = reactive_DEMOGR(), plt = plot_data(), MEFS = mefs_react())# out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params, output_format = input$report_format,
+                        envir = new.env(parent = globalenv())
+      )                                          
+    }
     
-        rmarkdown::render(tempReport, output_file = file,
-                          params = params,
-                          envir = new.env(parent = globalenv())
-                           )
-        
-                               }
-                                    )
+  )
+}
+
+
+####
+
+
+}) #this is the end of OBSERVE "function"
+
+#observe({session$sendCustomMessage(type = 'testmessage', message = "There are no more patients with this diagnosis.")})
 
 
 } # this is closing for SERVER function

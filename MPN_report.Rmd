@@ -1,19 +1,21 @@
 ---
-title: ""
-output: html_document
+title: ''
 params:
-  upn: NA
-  mut: NA
-  dem: NA
-  plt: NA
-  out_mf: NA
-  out_m: NA
   MEFS: NA
+  dem: NA
+  mut: NA
+  out_m: NA
+  out_mf: NA
+  plt: NA
+  upn: NA
+  
+output: html_document
 ---
 ![](sanger_logo.png)
 ![](line.png)
 
 ## MPN prediction model report
+
 
 ### Report created on `r Sys.time()`
 
@@ -21,29 +23,32 @@ params:
 
 ## Patient description:
 
-* #### `r params$upn`
+#######
 
-* #### `r params$mut`
+* #### Patient selected: `r if (params$upn!=""){paste(params$upn)}else{paste("User input")}`
+
+* #### Mutations detected: `r params$mut`
 
 * #### `r params$dem`
 
 
+
 ```{r echo=FALSE}
-#library(png)
+
 img <- readPNG("sed_plot_key.png")
-#par(mfrow=c(1,2))
 layout(matrix(c(1,1,1,2), 1, 2))
 newdataplot(params$plt)
-#grid::grid.raster(img)
+
 
 ```
-![Legend key](sed_plot_key.png) <!-- need to figure out how to move it to the left! -->
+![Legend key](sed_plot_key.png) 
 
 ### Patient Outcomes:
 
 #### `r params$MEFS`
 
-#### `r params$out_mf`
-#### `r params$out_m`
+#### `r if (params$out_mf=="NA"){paste("")}else{params$out_mf}`
+#### `r if (params$out_m=="NA"){paste("")}else{params$out_m}`
+
 
 

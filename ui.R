@@ -1,3 +1,4 @@
+# this is current running version of UI
 library(shiny)
 load("www/MPNmultistate.RData", envir=globalenv())
 
@@ -46,199 +47,199 @@ numericInput("Pl",
  fluidRow(
 column(3,offset=0.5,radioButtons("Sex", label = h6("Gender"),
        choices = list("Female" = 1, "Male" = 2,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA), selected = "NA")), #in all cases down - changed selecte values from NA to "NA", since NA does not work in my local env
 column(3,offset=0.5,radioButtons("PriorThrom", label = h6("Prior thrombosis"),
        choices = list("No" = 0, "Yes" = 1,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
 column(3,offset=0.5,radioButtons("Splen", label = h6("Splenomegaly"),
        choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 ),
       fluidRow(
 	column(4, offset=1,radioButtons("JAK2", label = h6("JAK2V617F"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(4,offset=1,radioButtons("MPL", label = h6("MPL"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(4,offset=1,radioButtons("CALR", label = h6("CALR"),
         choices = list("Type 1" = 1, "Type 2" = 2, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(4,offset=1,radioButtons("JAK2e12", label = h6("JAK2 exon 12"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
       fluidRow(
 	column(3,radioButtons("ASXL1", label = h6("ASXL1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("TET2", label = h6("TET2"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("SRSF2", label = h6("SRSF2"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("TP53", label = h6("TP53"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
       fluidRow(
 	column(3,radioButtons("DNMT3A", label = h6("DNMT3A"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("EZH2", label = h6("EZH2"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("U2AF1", label = h6("U2AF1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("SF3B1", label = h6("SF3B1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
 
       fluidRow(
 	column(3,radioButtons("CBL", label = h6("CBL"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("NF1", label = h6("NF1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("IDH2", label = h6("IDH2"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("PPM1D", label = h6("PPM1D"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
       fluidRow(
 	column(3,radioButtons("NFE2", label = h6("NFE2"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("ZRSR2", label = h6("ZRSR2"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("NRAS", label = h6("NRAS"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("GNAS", label = h6("GNAS"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
 
       fluidRow(
 	column(3,radioButtons("SH2B3", label = h6("SH2B3"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("KRAS", label = h6("KRAS"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("PTPN11", label = h6("PTPN11"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("CUX1", label = h6("CUX1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
       fluidRow(
 	column(3,radioButtons("SETBP1", label = h6("SETBP1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("KIT", label = h6("KIT"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("BCOR", label = h6("BCOR"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("IDH1", label = h6("IDH1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
       fluidRow(
 	column(3,radioButtons("RUNX1", label = h6("RUNX1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("GATA2", label = h6("GATA2"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("PHF6", label = h6("PHF6"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("FLT3", label = h6("FLT3"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
 
       fluidRow(
       	column(3,radioButtons("MLL3", label = h6("MLL3"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("GNB1", label = h6("GNB1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("STAG2", label = h6("STAG2"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("MBD1", label = h6("MBD1"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
 
       fluidRow(
 	column(3,radioButtons("C9U", label = h6("9pUPD"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C9g", label = h6("Tri 9"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C1p", label = h6("1pUPD"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C1q", label = h6("1q+"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
       fluidRow(
 	column(3,radioButtons("C4", label = h6("4qUPD"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C5", label = h6("5q-"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C7", label = h6("7q-"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C8", label = h6("Tri 8"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
       fluidRow(
 	column(3,radioButtons("C11", label = h6("11q-"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C12", label = h6("12pUPD"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C13", label = h6("13qUPD"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C14", label = h6("14qUPD"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	),
       fluidRow(
 	column(3,radioButtons("C17", label = h6("17p"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C18", label = h6("18qUPD"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C19", label = h6("19pUPD"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA)),
+                       "Unknown" = NA),selected = "NA")),
       	column(3,offset=0.2,radioButtons("C20", label = h6("20q-"),
         choices = list("Present" = 1, "Absent" = 0,
-                       "Unknown" = NA),selected = NA))
+                       "Unknown" = NA),selected = "NA"))
 	)
 
 )
@@ -327,10 +328,17 @@ wellPanel(
 h5("Patient Outcomes",align="centre"),
      textOutput("OutcomeMF"),
      textOutput("Outcome")
+
 )),
 
-downloadButton("report", "Generate report"), #Inserted button for report generation
 
+fluidRow(
+  wellPanel(
+  radioButtons(inputId="report_format", label = h5("Select report format"),
+                                  choices = list("HTML" = 'html_document', "Presentation" = 'powerpoint_presentation'), selected = 'html_document'),
+  
+  downloadButton("report", "Generate report"),
+             )),
 
 ))))
 )

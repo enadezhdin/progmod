@@ -1,0 +1,46 @@
+---
+title: "MPN prognostic model report"
+params:
+  MEFS: NA
+  dem: NA
+  mut: NA
+  out_m: NA
+  out_mf: NA
+  plt: NA
+  upn: NA
+output:
+  powerpoint_presentation:
+    reference_doc: MPN_report.potx
+
+---
+####    {-}
+Report created on `r Sys.time()`
+
+ *Software ver. # 0.0.1*
+
+###### Patient description: {-}
+
+- Patient selected: `r if (params$upn!=""){paste(params$upn)}else{paste("User input")}`
+
+- Mutations detected: `r params$mut`
+
+- `r params$dem`
+
+###### Patient Outcomes: {-}
+
+- `r params$MEFS`
+
+- `r if (params$out_mf=="NA"){paste("")}else{params$out_mf}`
+- `r if (params$out_m=="NA"){paste("")}else{params$out_m}`
+
+```{r, fig.cap="MPN report patient survival diagram", echo=FALSE}
+diagr_file_path <- file.path(tempdir(), "patient_diagram_output.png")
+knitr::include_graphics(diagr_file_path)
+
+```
+
+
+
+
+
+
