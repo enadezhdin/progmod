@@ -153,20 +153,28 @@ paste("AML transformation or death did not occur during follow-up")
 ##### Outcome/outcomeMF react functions for report
 
 Outcome_react <- reactive({
-  if(datasetInput()$AMLTC[PNO()]==1){
-    paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
-  }else if(datasetInput()$DeathC[PNO()]==1){
-    paste("Patient did not develop AML during follow-up time, but died within",ceiling(datasetInput()$Death[PNO()]/365.25)," year(s) of diagnosis.")
-  }else{
-    paste("AML transformation or death did not occur during follow-up")
-  }
+  if(input$newdata=="Use existing patient data"){ print("This IS Use existing patient data")#inserted this cond to avoid error if input IS NOT inetrnal db
+    ##### the problem is even if input is not internal db, databaseInput still exists!
+    if(datasetInput()$AMLTC[PNO()]==1){
+      paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
+    }else if(datasetInput()$DeathC[PNO()]==1){
+      paste("Patient did not develop AML during follow-up time, but died within",ceiling(datasetInput()$Death[PNO()]/365.25)," year(s) of diagnosis.")
+    }else{
+      paste("AML transformation or death did not occur during follow-up")
+    }
+  }else{paste("")}
 })
 
+
+
+
 OutcomeMF_react <- reactive({
+  if(input$newdata=="Use existing patient data"){  print("This IS Use existing patient data") #inserted this cond to avoid error if input IS NOT inetrnal db
   if(datasetInput()$MF[PNO()]!=1){
     if(datasetInput()$MFTC[PNO()]==1){
       paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$MFT[PNO()]/365.25)," year(s) of diagnosis.")
     }else{paste("")}
+  }else{paste("")}
   }else{paste("")}
 })
 
@@ -353,7 +361,7 @@ if (input$report_format=='html_document') {
       file.copy("sanger_logo.png", tempImage_logo)
       file.copy("line.png", tempImage_line)
       
-      params <- list(upn = UPN_react(), mut = reactive_MUTLIST(), dem = reactive_DEMOGR(), plt = plot_data(), MEFS = mefs_react())# out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
+      params <- list(upn = UPN_react(), mut = reactive_MUTLIST(), dem = reactive_DEMOGR(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
       #ATTN! if input from user data the value of upn passed to report is "", not NA!
       #below original string with params
       #params <- list(upn = UPN_react(), mut = Mut_desc_react(), dem = Demogr_react(), plt = plot_data(), out_mf = OutcomeMF_react(), out_m = Outcome_react(), MEFS = mefs_react()) 
