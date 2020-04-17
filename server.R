@@ -89,7 +89,10 @@ paste("Patient Selected:", as.character(PID()))
 })
 
 # obtaining PID value for the report generation
-UPN_react <- reactive({paste(as.character(PID())) #removed "Patient Selected:"
+
+UPN_react <- reactive({if(input$newdata=="Use existing patient data") {paste(as.character(PID()))}#removed "Patient Selected:"
+                       else if (input$newdata=="Input new patient data") {paste(as.character(input$UID))}
+                       else if (input$newdata=="Input data from file") {paste((as.character(values$val$UID)))}
 })
 
 
@@ -280,6 +283,7 @@ values$val$Sex<-as.numeric(filedata$Sex[1])
 values$val$Hb<-filedata$Hb[1]/100
 values$val$WCC<-filedata$WCC[1]/100
 values$val$Pl<-filedata$Pl[1]/1000
+values$val$UID <- filedata$UID  # iserted to retrieve UID from file
 }
 })
 
@@ -387,7 +391,7 @@ if (input$report_format=='html_document') {
       file.copy("line.png", tempImage_line)
       file.copy("MPN_report.potx", tempReport_template)
       
-      params <- list(upn = UPN_react(), mut = reactive_MUTLIST(), dem = reactive_DEMOGR(), plt = plot_data(), MEFS = mefs_react())# out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
+      params <- list(upn = UPN_react(), mut = reactive_MUTLIST(), dem = reactive_DEMOGR(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
       rmarkdown::render(tempReport, output_file = file,
                         params = params, output_format = input$report_format,
                         envir = new.env(parent = globalenv())

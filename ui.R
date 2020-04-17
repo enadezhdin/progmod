@@ -32,6 +32,9 @@ h4("Input New Patient Data"),
 helpText("Enter data for new patient.
       Unknown data will be imputed from available variables."),
 
+textInput("UID",
+          label = h6 ("Patient ID"),
+          value = NA),
 numericInput("Age", 
        label = h6("Age at diagnosis"), 
        value = NA),
