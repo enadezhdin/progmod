@@ -51,7 +51,7 @@ text(x=12.5*365/25,y=0.05,labels=paste0("10yr AML risk: ",round(multistate[10*36
 text(x=20*365/25,y=0.05,labels=paste0("20yr AML risk: ",round(multistate[20*365/25,7,1],3)*100,"%"))
 text(x=12.5*365/25,y=0.5,labels=MEFS)
 }
-mefs_react <<- reactive(MEFS) # retrieveing MEFS value for the report output
+mefs_react <- reactive(MEFS) # retrieveing MEFS value for the report output
 }
 
 combo<-function(data,a,b)
@@ -90,7 +90,7 @@ paste("Patient Selected:", as.character(PID()))
 
 # obtaining PID value for the report generation
 
-UPN_react <- reactive({if(input$newdata=="Use existing patient data") {paste(as.character(PID()))}#removed "Patient Selected:"
+UPN_react <- reactive({if(input$newdata=="Use existing patient data") {paste(as.character(PID()))}
                        else if (input$newdata=="Input new patient data") {paste(as.character(input$UID))}
                        else if (input$newdata=="Input data from file") {paste((as.character(values$val$UID)))}
 })
@@ -114,15 +114,15 @@ variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
   }
   })
   
-#### Mutations description react function for report
-Mut_desc_react <- reactive({if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
-  h4("Patient Description")
-  paste0("Mutations detected: Nil")
-}else{
-  h4("Patient Description")
-  paste0("Mutations detected: ",toString(
-    variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
-}})
+#### Mutations description react function for report 
+# Mut_desc_react <- reactive({if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
+#   h4("Patient Description")
+#   paste0("Mutations detected: Nil")
+# }else{
+#   h4("Patient Description")
+#   paste0("Mutations detected: ",toString(
+#     variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
+# }})
 ###########
   
   
@@ -131,7 +131,7 @@ paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()
 })
 
 #### demograph reactive function for report
-Demogr_react <- reactive({paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0))})
+# Demogr_react <- reactive({paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0))})
 
 
 output$OutcomeMF<-renderText({
@@ -156,8 +156,8 @@ paste("AML transformation or death did not occur during follow-up")
 ##### Outcome/outcomeMF react functions for report
 
 Outcome_react <- reactive({
-  if(input$newdata=="Use existing patient data"){ print("This IS Use existing patient data")#inserted this cond to avoid error if input IS NOT inetrnal db
-    ##### the problem is even if input is not internal db, databaseInput still exists!
+  if(input$newdata=="Use existing patient data"){ print("This IS Use existing patient data")
+    
     if(datasetInput()$AMLTC[PNO()]==1){
       paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
     }else if(datasetInput()$DeathC[PNO()]==1){
@@ -172,7 +172,7 @@ Outcome_react <- reactive({
 
 
 OutcomeMF_react <- reactive({
-  if(input$newdata=="Use existing patient data"){  print("This IS Use existing patient data") #inserted this cond to avoid error if input IS NOT inetrnal db
+  if(input$newdata=="Use existing patient data"){  print("This IS Use existing patient data") 
   if(datasetInput()$MF[PNO()]!=1){
     if(datasetInput()$MFTC[PNO()]==1){
       paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$MFT[PNO()]/365.25)," year(s) of diagnosis.")
@@ -294,8 +294,8 @@ Genes_list <- colnames(MPNinput)[1:55]
 
 ###### demogrphic and mutation list react functions to report from values 
 
-reactive_DEMOGR <- reactive({paste0("Age: ",round(values$val$Age*10),". Gender: ",Gender_list[values$val$Sex], ". Haemoglobin (g/l): ",values$val$Hb*100, ". White cell count (x10^9/l): ", values$val$WCC*100,". Platelet count (x10^9/l): ", values$val$Pl*1000)})
-reactive_MUTLIST <- reactive(Genes_list[which (values$val[1, c(1:55),drop=FALSE]!=0)])
+demogr_react <- reactive({paste0("Age: ",round(values$val$Age*10),". Gender: ",Gender_list[values$val$Sex], ". Haemoglobin (g/l): ",values$val$Hb*100, ". White cell count (x10^9/l): ", values$val$WCC*100,". Platelet count (x10^9/l): ", values$val$Pl*1000)})
+mutlist_react <- reactive(Genes_list[which (values$val[1, c(1:55),drop=FALSE]!=0)])
 
 ### define report format
 reactive_report_format <- reactive(input$report_format)
@@ -344,7 +344,7 @@ output$downloadData <- downloadHandler(
       write.csv(datasetInput()[1,1:65], file,row.names=FALSE)
     })
 
-output$comboplot<-renderPlot({par(bty="L", xaxs="i",yaxs="i") #this is plot on second tab (2 genes)
+output$comboplot<-renderPlot({par(bty="L", xaxs="i",yaxs="i") 
 combo(TGSgenes,input$Gene1,input$Gene2)
 },height=function(){400},width=function(){600}
 )
@@ -365,10 +365,9 @@ if (input$report_format=='html_document') {
       file.copy("sanger_logo.png", tempImage_logo)
       file.copy("line.png", tempImage_line)
       
-      params <- list(upn = UPN_react(), mut = reactive_MUTLIST(), dem = reactive_DEMOGR(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
+      params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
       #ATTN! if input from user data the value of upn passed to report is "", not NA!
-      #below original string with params
-      #params <- list(upn = UPN_react(), mut = Mut_desc_react(), dem = Demogr_react(), plt = plot_data(), out_mf = OutcomeMF_react(), out_m = Outcome_react(), MEFS = mefs_react()) 
+      
       rmarkdown::render(tempReport, output_file = file,
                         params = params, output_format = input$report_format,
                         envir = new.env(parent = globalenv())
@@ -391,7 +390,7 @@ if (input$report_format=='html_document') {
       file.copy("line.png", tempImage_line)
       file.copy("MPN_report.potx", tempReport_template)
       
-      params <- list(upn = UPN_react(), mut = reactive_MUTLIST(), dem = reactive_DEMOGR(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
+      params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
       rmarkdown::render(tempReport, output_file = file,
                         params = params, output_format = input$report_format,
                         envir = new.env(parent = globalenv())
