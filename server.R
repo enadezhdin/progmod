@@ -285,6 +285,9 @@ values$val$Splen <- as.numeric(filedata$Splen[1])
 values$val$Hb<-filedata$Hb[1]/100
 values$val$WCC<-filedata$WCC[1]/100
 values$val$Pl<-filedata$Pl[1]/1000
+values$val$ET <- filedata$ET[1]
+values$val$PV <- filedata$PV[1]
+values$val$MF <- filedata$MF[1]
 values$val$PriorThrom<-as.numeric(filedata$PriorThrom[1])
 values$val$UID <- filedata$UID  # iserted to retrieve UID from file
 }

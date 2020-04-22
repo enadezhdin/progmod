@@ -284,7 +284,7 @@ h4("Data regarding the accuracy of the model are provided in the paper. In gener
 br(),
 h4("Outcome predictions are from diagnosis and uses the risk associated with variables from time of diagnosis. If time of genomic sampling is post diagnosis then we suggest adjusting patient age to time of genomic sampling, and to use this as the starting time for predictions."),
 br(),
-h5("Shiny implementation - Jacob Grinfeld (jg738@cam.ac.uk), with additional work by Eugene Nadezhdin"),
+h5("Shiny implementation - Jacob Grinfeld (jg738@cam.ac.uk), with additional work by Eugene Nadezhdin."),
 h5("CoxHD package and multistate models - Moritz Gerstung, with additional work by Rob Cantrill and Jacob Grinfeld."),
 h5("Last update: April 2020")
 ),
