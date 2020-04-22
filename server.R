@@ -1,3 +1,4 @@
+### This version is deployed as Ver 1.0.0.
 library(shiny)
 library(xtable)
 library(RColorBrewer)
@@ -51,7 +52,7 @@ text(x=12.5*365/25,y=0.05,labels=paste0("10yr AML risk: ",round(multistate[10*36
 text(x=20*365/25,y=0.05,labels=paste0("20yr AML risk: ",round(multistate[20*365/25,7,1],3)*100,"%"))
 text(x=12.5*365/25,y=0.5,labels=MEFS)
 }
-mefs_react <- reactive(MEFS) # retrieveing MEFS value for the report output
+mefs_react <<- reactive(MEFS) # retrieveing MEFS value for the report output
 }
 
 combo<-function(data,a,b)
@@ -280,9 +281,11 @@ filedata<-read.csv(inFile$datapath, header=TRUE, sep=",")
 values$val[1:55]<-filedata[1,1:55] #values from csv 1-55 are values for set of genes
 values$val$Age<-filedata$Age[1]/10
 values$val$Sex<-as.numeric(filedata$Sex[1])
+values$val$Splen <- as.numeric(filedata$Splen[1])
 values$val$Hb<-filedata$Hb[1]/100
 values$val$WCC<-filedata$WCC[1]/100
 values$val$Pl<-filedata$Pl[1]/1000
+values$val$PriorThrom<-as.numeric(filedata$PriorThrom[1])
 values$val$UID <- filedata$UID  # iserted to retrieve UID from file
 }
 })

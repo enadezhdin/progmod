@@ -19,7 +19,7 @@ output: html_document
 
 ### Report created on `r Sys.time()`
 
-#### Software ver. # 0.0.1
+#### Software ver. # 1.0.0
 
 ## Patient description:
 
