@@ -266,6 +266,43 @@ actionButton("update", "Calculate Risk from Selected Variables")
 
     mainPanel(
 tabsetPanel(
+tabPanel("Patient Prediction",
+conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
+wellPanel(
+style = "overflow-y:scroll; padding:0px; max-height: 200px",
+h5("Patient Description",align="centre"),
+textOutput("UPN"),
+textOutput("MutationDesc"),
+textOutput("Demographics")
+)),
+           
+fluidRow(     
+  column(9,style="padding:0px",plotOutput("msplot")),
+  column(3, style="padding:3px", img (src="Legend_key_new.png", height = 330, width = 125)) #image has to be in www, bit path without www!
+),
+           
+           
+conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
+wellPanel(
+h5("Patient Outcomes",align="centre"),
+    textOutput("OutcomeMF"),
+    textOutput("Outcome")
+                              
+)),
+           
+           
+fluidRow(
+  wellPanel(
+  radioButtons(inputId="report_format", label = h5("Select report format"),
+              choices = list("HTML" = 'html_document', "Presentation" = 'powerpoint_presentation'), selected = 'html_document'),
+              downloadButton("report", "Generate report"),
+             )),
+           
+           
+           
+),
+  
+
 tabPanel("Comments/Help",
 
 h4("This application is based on data and prognostic models from Grinfeld and Nangalia et al. 2018"),
@@ -308,41 +345,10 @@ fluidRow(
   column(7,offset=2,
     plotOutput('comboplot')))
 
-),
-
-tabPanel("Patient Prediction",
-conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
-wellPanel(
-style = "overflow-y:scroll; padding:0px; max-height: 200px",
-h5("Patient Description",align="centre"),
-      textOutput("UPN"),
-      textOutput("MutationDesc"),
-      textOutput("Demographics")
-)),
-
-fluidRow(     
-  column(9,style="padding:0px",plotOutput("msplot")),
-  column(3,style="padding:0px",
-         img(src="sed_plot_key.png", height = 300, width = 135))
-),
-
-conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
-wellPanel(
-h5("Patient Outcomes",align="centre"),
-     textOutput("OutcomeMF"),
-     textOutput("Outcome")
-
-)),
+)
 
 
-fluidRow(
-  wellPanel(
-  radioButtons(inputId="report_format", label = h5("Select report format"),
-                                  choices = list("HTML" = 'html_document', "Presentation" = 'powerpoint_presentation'), selected = 'html_document'),
-  
-  downloadButton("report", "Generate report"),
-             )),
+     ))), 
 
-))))
 )
 

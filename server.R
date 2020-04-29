@@ -10,7 +10,7 @@ load("www/MPNmultistate.RData", envir=globalenv())
 
 function(input, output,clientData,session) {
 
-newdataplot<-function(newdata,ET=newdata$ET,PV=newdata$PV,MF=newdata$MF){
+newdataplot<-function(newdata,ET=newdata$ET,PV=newdata$PV,MF=newdata$MF){ # still leak of input if first selected internal dataset input - selection of initial diagnosis affects calculations somehow, if started with file - one output, if started with intrnal DB, and after switched to file - diff output! 
 newdata$MF==MF;newdata$PV==PV;newdata$ET==ET; lab=c(0,5,10,15,20,25)
 multistate<-MultiRFX5(cp_fit, aml_fit, cp_to_mf_fit, mf_fit, aml_fit, newdata, x=365*25)
 
@@ -79,7 +79,7 @@ datasetInput<-reactive({switch(input$dataset, #conceptually datasetInput==MPNinp
            "Primary/Secondary Myelofibrosis (n=276)" = MPNinput[which(MPNinput$MF==1),],
            "Other MPN (n=43)" = MPNinput[which(MPNinput$ET==0&MPNinput$PV==0&MPNinput$MF==0),])})
 #Make patient list specific to chosen diagnosis:
-updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())])
+updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())]) #this responds to changes in initial diagnosis input
 PID<-reactive({input$patient})
 
 #Display patient characteristics:
@@ -115,36 +115,26 @@ variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
   }
   })
   
-#### Mutations description react function for report 
-# Mut_desc_react <- reactive({if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
-#   h4("Patient Description")
-#   paste0("Mutations detected: Nil")
-# }else{
-#   h4("Patient Description")
-#   paste0("Mutations detected: ",toString(
-#     variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
-# }})
-###########
-  
   
 output$Demographics <- renderText({
 paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")
 })
 
-#### demograph reactive function for report
-# Demogr_react <- reactive({paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0))})
-
 
 output$OutcomeMF<-renderText({
+if(!is.na(datasetInput()$MFTC[PNO()])){
 if(datasetInput()$MF[PNO()]!=1){
 if(datasetInput()$MFTC[PNO()]==1){
 paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$MFT[PNO()]/365.25)," year(s) of diagnosis.")
 }else{paste("")}
 }else{paste("")}
-})
+}else{paste("")}
+}
+)
 
 
 output$Outcome <- renderText({
+if (!is.na(datasetInput()$AMLTC[PNO()])&!is.na(datasetInput()$DeathC[PNO()])){
 if(datasetInput()$AMLTC[PNO()]==1){
 paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
 }else if(datasetInput()$DeathC[PNO()]==1){
@@ -152,12 +142,14 @@ paste("Patient did not develop AML during follow-up time, but died within",ceili
 }else{
 paste("AML transformation or death did not occur during follow-up")
 }
-})
+}
+}
+)
 
 ##### Outcome/outcomeMF react functions for report
 
 Outcome_react <- reactive({
-  if(input$newdata=="Use existing patient data"){ print("This IS Use existing patient data")
+  if(input$newdata=="Use existing patient data"){ #print("This IS Use existing patient data")
     
     if(datasetInput()$AMLTC[PNO()]==1){
       paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
@@ -173,7 +165,7 @@ Outcome_react <- reactive({
 
 
 OutcomeMF_react <- reactive({
-  if(input$newdata=="Use existing patient data"){  print("This IS Use existing patient data") 
+  if(input$newdata=="Use existing patient data"){  #print("This IS Use existing patient data") #### THIS IS THE KEY TO ERROR!
   if(datasetInput()$MF[PNO()]!=1){
     if(datasetInput()$MFTC[PNO()]==1){
       paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$MFT[PNO()]/365.25)," year(s) of diagnosis.")
@@ -289,7 +281,7 @@ values$val$ET <- filedata$ET[1]
 values$val$PV <- filedata$PV[1]
 values$val$MF <- filedata$MF[1]
 values$val$PriorThrom<-as.numeric(filedata$PriorThrom[1])
-values$val$UID <- filedata$UID  # iserted to retrieve UID from file
+values$val$UID <- filedata$UID  # inserted to retrieve UID from file
 }
 })
 
@@ -329,7 +321,7 @@ observeEvent(input$update, {
     newdataplot(values$val)
     par(mar=c(3,0,3,1))
     plot(c(100, 300), c(100, 450), type = "n", xlab = "", ylab = "", bty="n", fg = "white", col.axis="white")
-    rasterImage(readPNG("sed_plot_key.png"), 100, 100, 300, 300)
+    rasterImage(readPNG("Legend_key_new.png"), 100, 120, 300, 420)
     dev.off()
 
                   
@@ -338,8 +330,9 @@ observeEvent(input$update, {
 
 
 ### patient plot to report
-plot_data <<- reactive(values$val)
+plot_data <<- reactive(values$val) #### NDB  NEEED to check <<--
 
+######################
 
 observe(if(input$newdata=="Input new patient data"){ updateNumericInput(session, "patient", value=dput(datasetInput()$id[1]))
 })
@@ -363,11 +356,11 @@ if (input$report_format=='html_document') {
     filename = "MPN_report.html",
     content = function(file) {
       tempReport <- file.path(tempdir(), "MPN_report.Rmd")
-      tempImage_plot_key <- file.path(tempdir(), "sed_plot_key.png")
+      tempImage_plot_key <- file.path(tempdir(), "Legend_key_new_s.png")
       tempImage_logo <- file.path(tempdir(), "sanger_logo.png")
       tempImage_line <- file.path(tempdir(), "line.png")
       file.copy("MPN_report.Rmd", tempReport, overwrite = TRUE)
-      file.copy("sed_plot_key.png", tempImage_plot_key)
+      file.copy("Legend_key_new_s.png", tempImage_plot_key)
       file.copy("sanger_logo.png", tempImage_logo)
       file.copy("line.png", tempImage_line)
       
@@ -386,12 +379,12 @@ if (input$report_format=='html_document') {
     filename = "MPN_report.pptx",
     content = function(file) {
       tempReport <- file.path(tempdir(), "MPN_report_pptx.Rmd")
-      tempImage_plot_key <- file.path(tempdir(), "sed_plot_key.png")
+      tempImage_plot_key <- file.path(tempdir(), "Legend_key_new.png")
       tempImage_logo <- file.path(tempdir(), "sanger_logo.png")
       tempImage_line <- file.path(tempdir(), "line.png")
       tempReport_template <- file.path(tempdir(), "MPN_report.potx")
       file.copy("MPN_report_pptx.Rmd", tempReport, overwrite = TRUE)
-      file.copy("sed_plot_key.png", tempImage_plot_key)
+      file.copy("Legend_key_new.png", tempImage_plot_key)
       file.copy("sanger_logo.png", tempImage_logo)
       file.copy("line.png", tempImage_line)
       file.copy("MPN_report.potx", tempReport_template)
