@@ -20,7 +20,7 @@ Report created on `r Sys.time()`
 
 ###### Patient description: {-}
 
-- Patient selected: `r if (params$upn!=""){paste(params$upn)}else{paste("User input")}`
+- Patient selected: `r params$upn`
 
 - Mutations detected: `r params$mut`
 

@@ -10,7 +10,7 @@ load("www/MPNmultistate.RData", envir=globalenv())
 
 function(input, output,clientData,session) {
 
-newdataplot<-function(newdata,ET=newdata$ET,PV=newdata$PV,MF=newdata$MF){ # still leak of input if first selected internal dataset input - selection of initial diagnosis affects calculations somehow, if started with file - one output, if started with intrnal DB, and after switched to file - diff output! 
+newdataplot<-function(newdata,ET=newdata$ET,PV=newdata$PV,MF=newdata$MF){
 newdata$MF==MF;newdata$PV==PV;newdata$ET==ET; lab=c(0,5,10,15,20,25)
 multistate<-MultiRFX5(cp_fit, aml_fit, cp_to_mf_fit, mf_fit, aml_fit, newdata, x=365*25)
 
@@ -104,7 +104,8 @@ if(length(which(datasetInput()$id==as.character(PID())))==0){1
 which(datasetInput()$id==as.character(PID()))}
 })
 
-  output$MutationDesc <- renderText({
+
+output$MutationDesc <- renderText({
 if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
      h4("Patient Description")
      paste0("Mutations detected: Nil")
@@ -117,7 +118,7 @@ variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
   
   
 output$Demographics <- renderText({
-paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0), collapse="\t")
+paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0),".", collapse="\t")
 })
 
 
@@ -206,6 +207,12 @@ values<-reactiveValues(val=NULL)
 observeEvent(input$update,{
 values$val<-datasetInput()[PNO(),1:71] 
 if(input$newdata=="Input new patient data"){ 
+values$val$Belfast <- NA
+values$val$Exomes <- NA
+values$val$Florence <- NA
+values$val$GSTT <- NA
+values$val$Local <- NA
+values$val$PT1 <- NA
 values$val$Age<-input$Age/10
 values$val$Hb<-input$Hb/100
 values$val$WCC<-input$WCC/100
@@ -213,7 +220,7 @@ values$val$Pl<-input$Pl/1000
 values$val$Sex<-as.numeric(input$Sex)
 values$val$Splen<-as.numeric(input$Splen)
 values$val$PriorThrom<-as.numeric(input$PriorThrom)
-values$val$CALR1<-as.numeric(input$CALR)*(2-as.numeric(input$CALR))
+values$val$CALR1<-as.numeric(input$CALR)*(2-as.numeric(input$CALR)) ####  column CALR absent!!!!
 values$val$CALR2<-(as.numeric(input$CALR)/2)*(as.numeric(input$CALR)-1)
 values$val$JAK2<-as.numeric(input$JAK2)
 values$val$JAK2e12<-as.numeric(input$JAK2e12)
@@ -271,6 +278,13 @@ values$val$C20<-as.numeric(input$C20)
 inFile <- input$file1
 filedata<-read.csv(inFile$datapath, header=TRUE, sep=",")
 values$val[1:55]<-filedata[1,1:55] #values from csv 1-55 are values for set of genes
+values$val$Belfast <- NA
+values$val$Exomes <- NA
+values$val$Florence <- NA
+values$val$GSTT <- NA
+values$val$Local <- NA
+values$val$PT1 <- NA
+values$val$UID <- NA
 values$val$Age<-filedata$Age[1]/10
 values$val$Sex<-as.numeric(filedata$Sex[1])
 values$val$Splen <- as.numeric(filedata$Splen[1])
@@ -281,7 +295,8 @@ values$val$ET <- filedata$ET[1]
 values$val$PV <- filedata$PV[1]
 values$val$MF <- filedata$MF[1]
 values$val$PriorThrom<-as.numeric(filedata$PriorThrom[1])
-values$val$UID <- filedata$UID  # inserted to retrieve UID from file
+values$val$UID <- filedata$UID  # retrieve UID from file
+
 }
 })
 
@@ -292,7 +307,7 @@ Genes_list <- colnames(MPNinput)[1:55]
 
 ###### demogrphic and mutation list react functions to report from values 
 
-demogr_react <- reactive({paste0("Age: ",round(values$val$Age*10),". Gender: ",Gender_list[values$val$Sex], ". Haemoglobin (g/l): ",values$val$Hb*100, ". White cell count (x10^9/l): ", values$val$WCC*100,". Platelet count (x10^9/l): ", values$val$Pl*1000)})
+demogr_react <- reactive({paste0("Age: ",round(values$val$Age*10),". Gender: ",Gender_list[values$val$Sex], ". Haemoglobin (g/l): ",values$val$Hb*100, ". White cell count (x10^9/l): ", values$val$WCC*100,". Platelet count (x10^9/l): ", values$val$Pl*1000, ".")})
 mutlist_react <- reactive(Genes_list[which (values$val[1, c(1:55),drop=FALSE]!=0)])
 
 ### define report format
@@ -330,7 +345,7 @@ observeEvent(input$update, {
 
 
 ### patient plot to report
-plot_data <<- reactive(values$val) #### NDB  NEEED to check <<--
+plot_data <- reactive(values$val)
 
 ######################
 
@@ -365,7 +380,7 @@ if (input$report_format=='html_document') {
       file.copy("line.png", tempImage_line)
       
       params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
-      #ATTN! if input from user data the value of upn passed to report is "", not NA!
+      
       
       rmarkdown::render(tempReport, output_file = file,
                         params = params, output_format = input$report_format,

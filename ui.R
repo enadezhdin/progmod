@@ -278,7 +278,7 @@ textOutput("Demographics")
            
 fluidRow(     
   column(9,style="padding:0px",plotOutput("msplot")),
-  column(3, style="padding:3px", img (src="Legend_key_new.png", height = 330, width = 125)) #image has to be in www, bit path without www!
+  column(3, style="padding:3px", img (src="Legend_key_new.png", height = 330, width = 125)) #image has to be in /www, bit path without www!
 ),
            
            
@@ -297,9 +297,7 @@ fluidRow(
               choices = list("HTML" = 'html_document', "Presentation" = 'powerpoint_presentation'), selected = 'html_document'),
               downloadButton("report", "Generate report"),
              )),
-           
-           
-           
+
 ),
   
 
