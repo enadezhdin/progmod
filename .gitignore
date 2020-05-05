@@ -5,3 +5,5 @@
 web_app.Rproj
 server_*.R
 ui_*.R
+server copy*.R
+ui copy*.R

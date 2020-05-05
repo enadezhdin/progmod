@@ -315,15 +315,19 @@ reactive_report_format <- reactive(input$report_format)
 
 
 
+face_image_var <- list("www/Face_fig_s.png")
+
+if (as.integer(input$update)==0){output$msplot <- renderImage({list(src = "www/Face_fig_s.png")}, deleteFile = FALSE )}
+
+
 observeEvent(input$update,{
-  
+
 output$medianEFS<-
 output$msplot<-
 renderPlot({par(bty="L", xaxs="i",yaxs="i", mar=c(5,5,1,1))
 newdataplot(values$val)
 },height=function(){400},width=function(){600}
 )
-
 }
 )
 
@@ -331,12 +335,12 @@ newdataplot(values$val)
 observeEvent(input$update, {
  
 
-    png(filename = file.path(tempdir(), "patient_diagram_output.png"), width = 900, height = 640, units = "px") # inserted here on 03.04.2020 
+    png(filename = file.path(tempdir(), "patient_diagram_output.png"), width = 900, height = 640, units = "px") 
     layout(matrix(c(1,2), 1, 2), widths=c(4, 1), heights=c(1,1))
     newdataplot(values$val)
     par(mar=c(3,0,3,1))
     plot(c(100, 300), c(100, 450), type = "n", xlab = "", ylab = "", bty="n", fg = "white", col.axis="white")
-    rasterImage(readPNG("Legend_key_new.png"), 100, 120, 300, 420)
+    rasterImage(readPNG("report/Legend_key_new.png"), 100, 120, 300, 420)
     dev.off()
 
                   
@@ -374,10 +378,10 @@ if (input$report_format=='html_document') {
       tempImage_plot_key <- file.path(tempdir(), "Legend_key_new_s.png")
       tempImage_logo <- file.path(tempdir(), "sanger_logo.png")
       tempImage_line <- file.path(tempdir(), "line.png")
-      file.copy("MPN_report.Rmd", tempReport, overwrite = TRUE)
-      file.copy("Legend_key_new_s.png", tempImage_plot_key)
-      file.copy("sanger_logo.png", tempImage_logo)
-      file.copy("line.png", tempImage_line)
+      file.copy("report/MPN_report.Rmd", tempReport, overwrite = TRUE)
+      file.copy("report/Legend_key_new_s.png", tempImage_plot_key)
+      file.copy("report/sanger_logo.png", tempImage_logo)
+      file.copy("report/line.png", tempImage_line)
       
       params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
       
@@ -398,11 +402,11 @@ if (input$report_format=='html_document') {
       tempImage_logo <- file.path(tempdir(), "sanger_logo.png")
       tempImage_line <- file.path(tempdir(), "line.png")
       tempReport_template <- file.path(tempdir(), "MPN_report.potx")
-      file.copy("MPN_report_pptx.Rmd", tempReport, overwrite = TRUE)
-      file.copy("Legend_key_new.png", tempImage_plot_key)
-      file.copy("sanger_logo.png", tempImage_logo)
-      file.copy("line.png", tempImage_line)
-      file.copy("MPN_report.potx", tempReport_template)
+      file.copy("report/MPN_report_pptx.Rmd", tempReport, overwrite = TRUE)
+      file.copy("report/Legend_key_new.png", tempImage_plot_key)
+      file.copy("report/sanger_logo.png", tempImage_logo)
+      file.copy("report/line.png", tempImage_line)
+      file.copy("report/MPN_report.potx", tempReport_template)
       
       params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
       rmarkdown::render(tempReport, output_file = file,
