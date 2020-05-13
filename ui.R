@@ -5,9 +5,12 @@ load("www/MPNmultistate.RData", envir=globalenv())
 # Define UI for dataset viewer application
 fluidPage(
 tags$head(tags$script(src = "message-handler.js")),
+tags$title("MPN Personalised Risk Calculator"),
 
   # Application title.
-  titlePanel(h4("MPN Personalised Risk Calculator")),
+tags$h4("MPN Personalised Risk Calculator"),
+
+
 br(),
   sidebarLayout(
     sidebarPanel(
@@ -349,5 +352,10 @@ fluidRow(
 
      ))), 
 
+##### added embedding for piwik javascript
+
+HTML('<script src="/zxtm/piwik2.js"></script>')
+
 )
+
 
