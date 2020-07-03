@@ -8,6 +8,7 @@ params:
   out_mf: NA
   plt: NA
   upn: NA
+  diagn: NA
   
 output: html_document
 ---
@@ -19,13 +20,15 @@ output: html_document
 
 ### Report created on `r Sys.time()`
 
-#### Software ver. # 1.0.0
+#### Software ver. # 1.0.1
 
 ## Patient description:
 
 #######
 
 * #### Patient selected: `r params$upn`
+
+* #### Initial diagnosis: `r params$diagn`
 
 * #### Mutations detected: `r params$mut`
 

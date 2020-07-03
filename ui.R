@@ -1,10 +1,10 @@
-# this version is deployed as Ver. 1.0.0.
+# this version is deployed as Ver. 1.0.1.
 library(shiny)
-load("www/MPNmultistate.RData", envir=globalenv())
+#load("www/MPNmultistate.RData", envir=globalenv()) # do not need to load this data in ui part. It's already loaded in server.
 
 # Define UI for dataset viewer application
 fluidPage(
-tags$head(tags$script(src = "message-handler.js")),
+#tags$head(tags$script(src = "message-handler.js")),  #to avoid an error in online app, since 'message-handler.js' is not present the string is commented out
 tags$title("MPN Personalised Risk Calculator"),
 
   # Application title.
@@ -191,6 +191,15 @@ column(3,offset=0.5,radioButtons("Splen", label = h6("Splenomegaly"),
                        "Unknown" = NA),selected = "NA"))
 	),
 
+
+      fluidRow(                                                                  ## RB1 added to the selection list
+        column(3,radioButtons("RB1", label = h6("RB1"),
+                        choices = list("Present" = 1, "Absent" = 0,
+                                       "Unknown" = NA),selected = "NA")),
+
+  ),
+
+
       fluidRow(
 	column(3,radioButtons("C9U", label = h6("9pUPD"),
         choices = list("Present" = 1, "Absent" = 0,
@@ -281,7 +290,7 @@ textOutput("Demographics")
            
 fluidRow(     
   column(9,style="padding:0px", plotOutput("msplot")), 
-  column(3, style="padding:3px", img (src="Legend_key_new.png", height = 330, width = 125)) #image has to be in /www, bit path without www!
+  column(3, style="padding:3px", img (src="Legend_key_new.png", height = 330, width = 125)) #image has to be in /www, bit the path without www!
   ),
            
 
@@ -301,6 +310,7 @@ fluidRow(
               choices = list("HTML" = 'html_document', "Presentation" = 'powerpoint_presentation'), selected = 'html_document'),
               downloadButton("report", "Generate report"),
              )),
+
 
 ),
   
@@ -323,9 +333,11 @@ h4("Data regarding the accuracy of the model are provided in the paper. In gener
 br(),
 h4("Outcome predictions are from diagnosis and uses the risk associated with variables from time of diagnosis. If time of genomic sampling is post diagnosis then we suggest adjusting patient age to time of genomic sampling, and to use this as the starting time for predictions."),
 br(),
-h5("Shiny implementation - Jacob Grinfeld (jg738@cam.ac.uk), with additional work by Eugene Nadezhdin."),
+h5("Requests related to the MPN prediction model should be addressed to Dr. Jacob Grinfeld (jacob.grinfeld@nhs.net), queries related to the web site and the app functionality should be addressed to Dr. Eugene Nadezhdin (en5@sanger.ac.uk)."),
+br(),
+h5("Shiny implementation - Jacob Grinfeld, with additional work by Eugene Nadezhdin."),
 h5("CoxHD package and multistate models - Moritz Gerstung, with additional work by Rob Cantrill and Jacob Grinfeld."),
-h5("Last update: April 2020")
+h5("Last update: July 2020")
 ),
 
 tabPanel("Genomics",
@@ -354,7 +366,7 @@ fluidRow(
 
 ##### added embedding for piwik javascript
 
-HTML('<script src="/zxtm/piwik2.js"></script>')
+HTML('<script src="/zxtm/piwik2.js"></script>') #check if i can put the tag outside the FluidPage fn
 
 )
 

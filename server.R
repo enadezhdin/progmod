@@ -1,4 +1,4 @@
-### This version is deployed as Ver 1.0.0.
+### This version is deployed as Ver 1.0.1.
 library(shiny)
 library(xtable)
 library(RColorBrewer)
@@ -71,6 +71,8 @@ as.data.frame(xtabs(~data[,which(colnames(data)==a)]+data[,which(colnames(data)=
 colnames(A)<-c("Diagnosis","Gene","Percentage"); ggplot(A,aes(x=Diagnosis,y=Percentage))+geom_col(aes(fill=Gene))+theme(text = element_text(size=20),panel.background = element_blank(),axis.line = element_line(colour = "black"))+ylab("Percentage of patients with mutation(s)")
 }
 
+######### Beginning of the reactive part
+
 
 observe({
 datasetInput<-reactive({switch(input$dataset, #conceptually datasetInput==MPNinput
@@ -96,13 +98,6 @@ UPN_react <- reactive({if(input$newdata=="Use existing patient data") {paste(as.
                        else if (input$newdata=="Input data from file") {paste((as.character(values$val$UID)))}
 })
 
-
-
-PNO<-reactive({
-if(length(which(datasetInput()$id==as.character(PID())))==0){1
-}else{
-which(datasetInput()$id==as.character(PID()))}
-})
 
 
 output$MutationDesc <- renderText({
@@ -204,7 +199,7 @@ paste0("Mean number of mutations in patients with ",input$Gene2,": ",round(mean(
 
 
 values<-reactiveValues(val=NULL)
-observeEvent(input$update,{
+observeEvent(input$update,{  ### this might trigger the update
 values$val<-datasetInput()[PNO(),1:71] 
 if(input$newdata=="Input new patient data"){ 
 values$val$Belfast <- NA
@@ -256,7 +251,7 @@ values$val$RUNX1<-as.numeric(input$RUNX1)
 values$val$PHF6<-as.numeric(input$PHF6)
 values$val$GATA2<-as.numeric(input$GATA2)
 values$val$MBD1<-as.numeric(input$MBD1)
-#values$val$RB1<-as.numeric(input$RB1)
+values$val$RB1<-as.numeric(input$RB1) #
 values$val$GNB1<-as.numeric(input$GNB1)
 values$val$C1p<-as.numeric(input$C1p)
 values$val$C1q<-as.numeric(input$C1q)
@@ -317,11 +312,16 @@ reactive_report_format <- reactive(input$report_format)
 
 face_image_var <- list("www/Face_fig_s.png")
 
-if (as.integer(input$update)==0){output$msplot <- renderImage({list(src = "www/Face_fig_s.png")}, deleteFile = FALSE )}
 
+#### ATTN!
+# if (as.integer(input$update)==0){output$msplot <- renderImage({list(src = "www/Face_fig_s.png")}, deleteFile = FALSE )}
+
+
+output$msplot <- renderImage({list(src = "www/Face_fig_s.png")}, deleteFile = FALSE ) 
+######
 
 observeEvent(input$update,{
-
+  
 output$medianEFS<-
 output$msplot<-
 renderPlot({par(bty="L", xaxs="i",yaxs="i", mar=c(5,5,1,1))
@@ -367,6 +367,38 @@ combo(TGSgenes,input$Gene1,input$Gene2)
 },height=function(){400},width=function(){600}
 )
 
+### trying to retrieve initial diagnosis to channnel it to the report
+
+## here is reactive object for report
+
+initdiagn_react <- reactive({
+  if(input$newdata=="Use existing patient data"|input$newdata=="Input new patient data") {
+    if (input$dataset=="Essential Thrombocytosis (n=1244)"){paste(as.character("Essential Thrombocytosis"))}
+    else if (input$dataset=="Polycythemia Vera (n=312)"){paste(as.character("Polycythemia Vera"))}
+    else if (input$dataset=="Primary/Secondary Myelofibrosis (n=276)"){paste(as.character("Primary/Secondary Myelofibrosis"))}
+    else if (input$dataset=="Other MPN (n=43)"){paste(as.character("Other MPN"))}
+  }
+  else if (input$newdata=="Input data from file") {
+    #paste(values$val$ET, values$val$PV, values$val$MF)
+    if (values$val$ET==1){paste(as.character("Essential Thrombocytosis"))}
+    else if (values$val$PV==1){paste(as.character("Polycythemia Vera"))}
+    else if (values$val$MF==1){paste(as.character("Primary/Secondary Myelofibrosis"))}
+    else if (values$val$ET==0&values$val$PV==0&values$val$MF==0) {paste(as.character("Other MPN"))}
+  }
+})
+
+
+
+
+
+PNO<-reactive({
+  if(length(which(datasetInput()$id==as.character(PID())))==0){1
+  }else{
+    which(datasetInput()$id==as.character(PID()))}
+})
+
+
+
 
 ####report format selection and processing part
 
@@ -383,7 +415,7 @@ if (input$report_format=='html_document') {
       file.copy("report/sanger_logo.png", tempImage_logo)
       file.copy("report/line.png", tempImage_line)
       
-      params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
+      params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react(), diagn = initdiagn_react()) 
       
       
       rmarkdown::render(tempReport, output_file = file,
@@ -408,7 +440,7 @@ if (input$report_format=='html_document') {
       file.copy("report/line.png", tempImage_line)
       file.copy("report/MPN_report.potx", tempReport_template)
       
-      params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react() ) 
+      params <- list(upn = UPN_react(), mut = mutlist_react(), dem = demogr_react(), plt = plot_data(), MEFS = mefs_react(), out_mf = OutcomeMF_react(), out_m = Outcome_react(), diagn = initdiagn_react() ) 
       rmarkdown::render(tempReport, output_file = file,
                         params = params, output_format = input$report_format,
                         envir = new.env(parent = globalenv())
