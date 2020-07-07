@@ -1,6 +1,7 @@
 # this version is deployed as Ver. 1.0.1.
 library(shiny)
-#load("www/MPNmultistate.RData", envir=globalenv()) # do not need to load this data in ui part. It's already loaded in server.
+
+load("www/MPNmultistate.RData", envir=globalenv()) #need to load this data in ui part (only for docker version). Locally works w/o it.
 
 # Define UI for dataset viewer application
 fluidPage(
