@@ -1,10 +1,10 @@
 # this version is deployed as Ver. 1.0.1.
 library(shiny)
 
-load("www/MPNmultistate.RData", envir=globalenv()) #need to load this data in ui part (only for docker version). Locally works w/o it.
+#load("www/MPNmultistate.RData", envir=globalenv()) #need to load this data in ui part (only for docker version). Locally works w/o it.
 
 # Define UI for dataset viewer application
-fluidPage(
+fluidPage( #theme = "bootstrap.min.css",
 #tags$head(tags$script(src = "message-handler.js")),  #to avoid an error in online app, since 'message-handler.js' is not present the string is commented out
 tags$title("MPN Personalised Risk Calculator"),
 
@@ -25,7 +25,7 @@ selectInput("newdata",label=h4("Use existing or new patient data"),choices=c("Us
 conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
   wellPanel(
       selectizeInput("patient", h4("  Select Patient:"),
-                  choices = dput(MPNinput$id[which(MPNinput$ET==1)]),options=list(maxOptions=2000)  )
+                  choices = dput(MPNinput$id[which(MPNinput$ET==1)]),options=list(maxOptions=2000)  ) #### ATTN!  Need to figure out how this part works!!!!!!
 )),
       
       ##Input own data
@@ -282,7 +282,7 @@ tabsetPanel(
 tabPanel("Patient Prediction",
 conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
 wellPanel(
-style = "overflow-y:scroll; padding:0px; max-height: 200px",
+style = "overflow-y:scroll; padding:10px; max-height: 200px",
 h5("Patient Description",align="centre"),
 textOutput("UPN"),
 textOutput("MutationDesc"),
@@ -304,15 +304,16 @@ h5("Patient Outcomes",align="centre"),
                               
 )),
            
-           
-fluidRow(
-  wellPanel(
-  radioButtons(inputId="report_format", label = h5("Select report format"),
-              choices = list("HTML" = 'html_document', "Presentation" = 'powerpoint_presentation'), selected = 'html_document'),
+wellPanel(style = "padding:20px; max-height: 150px",         
+    fluidRow(
+          column(3, offset = 0,
+           radioButtons(inputId="report_format", label = h5("Select report format"),
+                         choices = list("HTML" = 'html_document', "Presentation" = 'powerpoint_presentation'), selected = 'html_document')),
+           column (3, offset = 0,
               downloadButton("report", "Generate report"),
-             )),
-
-
+             ),
+)
+)
 ),
   
 

@@ -84,16 +84,29 @@ datasetInput<-reactive({switch(input$dataset, #conceptually datasetInput==MPNinp
 updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())]) #this responds to changes in initial diagnosis input
 PID<-reactive({input$patient})
 
+
 #Display patient characteristics:
 
-
-output$UPN <- renderText({
-paste("Patient Selected:", as.character(PID()))
+output$UPN <- renderText({  ### INS TEST
+  input$update  #inserted 08.07 ############
+isolate({ 
+  
+  if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
+    paste0("Patient Selected: Nil")
+  }else{
+    paste("Patient Selected:", as.character(PID())) }
 })
-
+})
 # obtaining PID value for the report generation
 
-UPN_react <- reactive({if(input$newdata=="Use existing patient data") {paste(as.character(PID()))}
+UPN_react <- reactive({if(input$newdata=="Use existing patient data") {
+                         input$update  #inserted 08.07 ############
+                         isolate({if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
+                         paste0("Nil")
+                         }else{
+                         paste(as.character(PID()))}
+                         })
+                         }
                        else if (input$newdata=="Input new patient data") {paste(as.character(input$UID))}
                        else if (input$newdata=="Input data from file") {paste((as.character(values$val$UID)))}
 })
@@ -101,6 +114,9 @@ UPN_react <- reactive({if(input$newdata=="Use existing patient data") {paste(as.
 
 
 output$MutationDesc <- renderText({
+  input$update  #inserted 08.07 ############
+  
+isolate ({ #inserted 08.07 ############
 if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
      h4("Patient Description")
      paste0("Mutations detected: Nil")
@@ -111,13 +127,21 @@ variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
   }
   })
   
+})
   
+
 output$Demographics <- renderText({
+  input$update  #inserted 08.07 ############
+  
+isolate({    #inserted 08.07 ############
 paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0),".", collapse="\t")
 })
-
+})
 
 output$OutcomeMF<-renderText({
+  input$update  #inserted 08.07 ############
+  
+isolate({  #inserted 08.07 ############
 if(!is.na(datasetInput()$MFTC[PNO()])){
 if(datasetInput()$MF[PNO()]!=1){
 if(datasetInput()$MFTC[PNO()]==1){
@@ -125,11 +149,16 @@ paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$
 }else{paste("")}
 }else{paste("")}
 }else{paste("")}
+      })
 }
 )
 
 
 output$Outcome <- renderText({
+  input$update  #inserted 08.07 ############
+  
+  
+  isolate ({
 if (!is.na(datasetInput()$AMLTC[PNO()])&!is.na(datasetInput()$DeathC[PNO()])){
 if(datasetInput()$AMLTC[PNO()]==1){
 paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
@@ -139,13 +168,14 @@ paste("Patient did not develop AML during follow-up time, but died within",ceili
 paste("AML transformation or death did not occur during follow-up")
 }
 }
-}
-)
+    
+  })
+})
 
 ##### Outcome/outcomeMF react functions for report
 
 Outcome_react <- reactive({
-  if(input$newdata=="Use existing patient data"){ #print("This IS Use existing patient data")
+  if(input$newdata=="Use existing patient data"){ 
     
     if(datasetInput()$AMLTC[PNO()]==1){
       paste("Patient developed AML within",ceiling(datasetInput()$AMLT[PNO()]/365.25)," year(s) of diagnosis")
@@ -161,7 +191,7 @@ Outcome_react <- reactive({
 
 
 OutcomeMF_react <- reactive({
-  if(input$newdata=="Use existing patient data"){  #print("This IS Use existing patient data") #### THIS IS THE KEY TO ERROR!
+  if(input$newdata=="Use existing patient data"){  
   if(datasetInput()$MF[PNO()]!=1){
     if(datasetInput()$MFTC[PNO()]==1){
       paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$MFT[PNO()]/365.25)," year(s) of diagnosis.")
@@ -199,7 +229,7 @@ paste0("Mean number of mutations in patients with ",input$Gene2,": ",round(mean(
 
 
 values<-reactiveValues(val=NULL)
-observeEvent(input$update,{  ### this might trigger the update
+observeEvent(input$update,{  ### this triggers the update
 values$val<-datasetInput()[PNO(),1:71] 
 if(input$newdata=="Input new patient data"){ 
 values$val$Belfast <- NA
@@ -215,7 +245,7 @@ values$val$Pl<-input$Pl/1000
 values$val$Sex<-as.numeric(input$Sex)
 values$val$Splen<-as.numeric(input$Splen)
 values$val$PriorThrom<-as.numeric(input$PriorThrom)
-values$val$CALR1<-as.numeric(input$CALR)*(2-as.numeric(input$CALR)) ####  column CALR absent!!!!
+values$val$CALR1<-as.numeric(input$CALR)*(2-as.numeric(input$CALR)) 
 values$val$CALR2<-(as.numeric(input$CALR)/2)*(as.numeric(input$CALR)-1)
 values$val$JAK2<-as.numeric(input$JAK2)
 values$val$JAK2e12<-as.numeric(input$JAK2e12)
@@ -316,25 +346,25 @@ face_image_var <- list("www/Face_fig_s.png")
 #### ATTN!
 # if (as.integer(input$update)==0){output$msplot <- renderImage({list(src = "www/Face_fig_s.png")}, deleteFile = FALSE )}
 
-
+### this will create the "empty" graph on the front page as app just starts
 output$msplot <- renderImage({list(src = "www/Face_fig_s.png")}, deleteFile = FALSE ) 
 ######
-
+#print(as.character(input$update))  ##### TEST!
 observeEvent(input$update,{
-  
+
 output$medianEFS<-
 output$msplot<-
-renderPlot({par(bty="L", xaxs="i",yaxs="i", mar=c(5,5,1,1))
-newdataplot(values$val)
-},height=function(){400},width=function(){600}
-)
+renderPlot({
+  par(bty="L", xaxs="i",yaxs="i", mar=c(5,5,1,1))
+  newdataplot(values$val)}, height=function(){400},width=function(){600}
+          )   # end of renderplot
 }
-)
+) 
+
 
 ######  generate diagram image for pptx report. Output plot is joined with the fig legend
 observeEvent(input$update, {
  
-
     png(filename = file.path(tempdir(), "patient_diagram_output.png"), width = 900, height = 640, units = "px") 
     layout(matrix(c(1,2), 1, 2), widths=c(4, 1), heights=c(1,1))
     newdataplot(values$val)
@@ -342,8 +372,6 @@ observeEvent(input$update, {
     plot(c(100, 300), c(100, 450), type = "n", xlab = "", ylab = "", bty="n", fg = "white", col.axis="white")
     rasterImage(readPNG("report/Legend_key_new.png"), 100, 120, 300, 420)
     dev.off()
-
-                  
 
 })
 
@@ -388,13 +416,21 @@ initdiagn_react <- reactive({
 })
 
 
+# PNO<-reactive({
+#   if(length(which(datasetInput()$id==as.character(PID())))==0){1
+#   }else{
+#     which(datasetInput()$id==as.character(PID()))}
+# })
 
-
+#### just for test
 
 PNO<-reactive({
+  input$update
+  isolate({
   if(length(which(datasetInput()$id==as.character(PID())))==0){1
   }else{
     which(datasetInput()$id==as.character(PID()))}
+})
 })
 
 
