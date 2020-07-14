@@ -1,4 +1,4 @@
-# this version is deployed as Ver. 1.0.1.
+# this version is deployed as Ver. 1.1.0.
 library(shiny)
 
 #load("www/MPNmultistate.RData", envir=globalenv()) #need to load this data in ui part (only for docker version). Locally works w/o it.

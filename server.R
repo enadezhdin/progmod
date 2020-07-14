@@ -1,4 +1,4 @@
-### This version is deployed as Ver 1.0.1.
+### This version is deployed as Ver 1.1.0.
 library(shiny)
 library(xtable)
 library(RColorBrewer)
