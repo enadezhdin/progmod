@@ -1,4 +1,6 @@
 ### This version is deployed as Ver 1.1.0.
+
+#### NB!! As is 24.07.2020 there is still a bug with report generation and patient ID! See sxls file for details!
 library(shiny)
 library(xtable)
 library(RColorBrewer)
@@ -9,6 +11,13 @@ library(png)
 load("www/MPNmultistate.RData", envir=globalenv())
 
 function(input, output,clientData,session) {
+  showModal(modalDialog( #modal inserted
+    title = "Important message",
+    includeHTML('www/disclaimer.html'),
+    footer = modalButton("OK"),
+    size = "l",
+    easyClose = FALSE
+            ))
 
 newdataplot<-function(newdata,ET=newdata$ET,PV=newdata$PV,MF=newdata$MF){
 newdata$MF==MF;newdata$PV==PV;newdata$ET==ET; lab=c(0,5,10,15,20,25)
@@ -82,13 +91,19 @@ datasetInput<-reactive({switch(input$dataset, #conceptually datasetInput==MPNinp
            "Other MPN (n=43)" = MPNinput[which(MPNinput$ET==0&MPNinput$PV==0&MPNinput$MF==0),])})
 #Make patient list specific to chosen diagnosis:
 updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())]) #this responds to changes in initial diagnosis input
-PID<-reactive({input$patient})
+PID<-reactive({input$patient})  #PID is not isolated!
 
+
+## extra rective value inserted for external patient ID in order to proper isolate the value, if input changes w/o pressinc calculate button==update, and report generated
+ext_patient_ID <- reactive({
+                            input$update
+                            isolate({paste(as.character(input$UID))})
+})
 
 #Display patient characteristics:
 
-output$UPN <- renderText({  ### INS TEST
-  input$update  #inserted 08.07 ############
+output$UPN <- renderText({  
+  input$update  
 isolate({ 
   
   if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
@@ -97,26 +112,30 @@ isolate({
     paste("Patient Selected:", as.character(PID())) }
 })
 })
+
+
 # obtaining PID value for the report generation
 
-UPN_react <- reactive({if(input$newdata=="Use existing patient data") {
-                         input$update  #inserted 08.07 ############
-                         isolate({if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
-                         paste0("Nil")
-                         }else{
-                         paste(as.character(PID()))}
-                         })
-                         }
-                       else if (input$newdata=="Input new patient data") {paste(as.character(input$UID))}
+UPN_react <- reactive({
+                       input$update  
+                       isolate({
+                                 if(input$newdata=="Use existing patient data") {
+                                    if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
+                                       paste0("Nil")
+                                    }else{
+                                       paste(as.character(PID()))}
+                                  }
+                       else if (input$newdata=="Input new patient data") {ext_patient_ID()}  ### new val inserted
                        else if (input$newdata=="Input data from file") {paste((as.character(values$val$UID)))}
+})
 })
 
 
 
 output$MutationDesc <- renderText({
-  input$update  #inserted 08.07 ############
+  input$update  
   
-isolate ({ #inserted 08.07 ############
+isolate ({ 
 if(length(which(datasetInput()[PNO(),1:55,drop=FALSE]!=0))==0){
      h4("Patient Description")
      paste0("Mutations detected: Nil")
@@ -131,17 +150,17 @@ variables[1,which(datasetInput()[PNO(),c(1:55),drop=FALSE]!=0)] ))
   
 
 output$Demographics <- renderText({
-  input$update  #inserted 08.07 ############
+  input$update  
   
-isolate({    #inserted 08.07 ############
+isolate({    
 paste0("Age: ",round(datasetInput()$Age[PNO()]*10,0),". Gender: ",datasetInput()$Gender[PNO()], ". Haemoglobin (g/l): ",round(datasetInput()$Hb[PNO()]*100,0), ". White cell count (x10^9/l): ", round(datasetInput()$WCC[PNO()]*100,1),". Platelet count (x10^9/l): ", round(datasetInput()$Pl[PNO()]*1000,0),".", collapse="\t")
 })
 })
 
 output$OutcomeMF<-renderText({
-  input$update  #inserted 08.07 ############
+  input$update  
   
-isolate({  #inserted 08.07 ############
+isolate({  
 if(!is.na(datasetInput()$MFTC[PNO()])){
 if(datasetInput()$MF[PNO()]!=1){
 if(datasetInput()$MFTC[PNO()]==1){
@@ -155,7 +174,7 @@ paste("Patient developed secondary myelofibrosis within",ceiling(datasetInput()$
 
 
 output$Outcome <- renderText({
-  input$update  #inserted 08.07 ############
+  input$update  
   
   
   isolate ({
@@ -349,7 +368,7 @@ face_image_var <- list("www/Face_fig_s.png")
 ### this will create the "empty" graph on the front page as app just starts
 output$msplot <- renderImage({list(src = "www/Face_fig_s.png")}, deleteFile = FALSE ) 
 ######
-#print(as.character(input$update))  ##### TEST!
+
 observeEvent(input$update,{
 
 output$medianEFS<-
@@ -395,10 +414,8 @@ combo(TGSgenes,input$Gene1,input$Gene2)
 },height=function(){400},width=function(){600}
 )
 
-### trying to retrieve initial diagnosis to channnel it to the report
 
-## here is reactive object for report
-
+## initial diagnosis for report
 initdiagn_react <- reactive({
   if(input$newdata=="Use existing patient data"|input$newdata=="Input new patient data") {
     if (input$dataset=="Essential Thrombocytosis (n=1244)"){paste(as.character("Essential Thrombocytosis"))}
@@ -416,13 +433,6 @@ initdiagn_react <- reactive({
 })
 
 
-# PNO<-reactive({
-#   if(length(which(datasetInput()$id==as.character(PID())))==0){1
-#   }else{
-#     which(datasetInput()$id==as.character(PID()))}
-# })
-
-#### just for test
 
 PNO<-reactive({
   input$update

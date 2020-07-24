@@ -1,7 +1,7 @@
 # this version is deployed as Ver. 1.1.0.
 library(shiny)
 
-#load("www/MPNmultistate.RData", envir=globalenv()) #need to load this data in ui part (only for docker version). Locally works w/o it.
+load("www/MPNmultistate.RData", envir=globalenv()) #need to load this data in ui part (only for docker version). Locally works w/o it.
 
 # Define UI for dataset viewer application
 fluidPage( #theme = "bootstrap.min.css",
@@ -316,32 +316,6 @@ wellPanel(style = "padding:20px; max-height: 150px",
 )
 ),
   
-
-tabPanel("Comments/Help",
-
-h4("This application is based on data and prognostic models from Grinfeld and Nangalia et al. 2018"),
-h4("The Genomics tab allows the user to view the frequency of mutations(s) across MPN subtypes."),
-h4("Alternatively, to generate individual patient predictions, first select the diagnosis of interest: ET, PV, MF or other (MPNu, MDS/MPN overlap etc)"),
-h4("Then choose between:"),
-tags$ul(
-    tags$li("Selecting a patient already used in the analysis to view their clinical and genomic parameters, predicted and actual outcomes,"), 
-    tags$li("Inputing variables for a new or hypothetical patient by manually inputting variables, or"), 
-    tags$li("Inputing variables for a new or hypothetical patient by downloading, completing and uploading a csv template file")
-),
-h4("The output is viewed on the Patient Prediction tab."),
-h4("This calculator is intended as an adjunct to the paper and for research purposes only."),
-h4("It has not been prospectively validated and predictions derived from it should be used with caution."),
-h4("Data regarding the accuracy of the model are provided in the paper. In general, predictions are accurate in approximately 80% of cases"),
-br(),
-h4("Outcome predictions are from diagnosis and uses the risk associated with variables from time of diagnosis. If time of genomic sampling is post diagnosis then we suggest adjusting patient age to time of genomic sampling, and to use this as the starting time for predictions."),
-br(),
-h5("Requests related to the MPN prediction model should be addressed to Dr. Jacob Grinfeld (jacob.grinfeld@nhs.net), queries related to the web site and the app functionality should be addressed to Dr. Eugene Nadezhdin (en5@sanger.ac.uk)."),
-br(),
-h5("Shiny implementation - Jacob Grinfeld, with additional work by Eugene Nadezhdin."),
-h5("CoxHD package and multistate models - Moritz Gerstung, with additional work by Rob Cantrill and Jacob Grinfeld."),
-h5("Last update: July 2020")
-),
-
 tabPanel("Genomics",
 h4("Frequency of genomic variables across MPN phenotypes"),
 fluidRow(
@@ -361,6 +335,10 @@ fluidRow(
   column(7,offset=2,
     plotOutput('comboplot')))
 
+),
+
+tabPanel("Help/Comments",
+         includeHTML("www/help.html")
 )
 
 
@@ -368,7 +346,7 @@ fluidRow(
 
 ##### added embedding for piwik javascript
 
-HTML('<script src="/zxtm/piwik2.js"></script>') #check if i can put the tag outside the FluidPage fn
+HTML('<script src="/zxtm/piwik2.js"></script>')
 
 )
 
