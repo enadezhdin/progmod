@@ -18,7 +18,7 @@ output: html_document
 ## MPN prediction model report
 
 
-### Report created on `r Sys.time()`
+### Report created on `r Sys.time()` (UTC)
 
 #### Software ver. # 1.1.0
 
