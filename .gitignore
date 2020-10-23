@@ -1,0 +1,9 @@
+*.css
+*.Rproj
+*copy.R
+.DS_Store
+.Rhistory
+.Rproj.user
+.idea
+.RData
+
