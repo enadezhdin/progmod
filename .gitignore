@@ -3,5 +3,15 @@
 .RData
 .Ruserdata
 .DS_Store
+<<<<<<< HEAD
 *copy.R
 web_app.Rproj
+www/.DS_Store
+=======
+web_app.Rproj
+server_*.R
+ui_*.R
+server copy*.R
+ui copy*.R
+
+>>>>>>> report
