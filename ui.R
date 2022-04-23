@@ -25,7 +25,7 @@ selectInput("newdata",label=h4("Use existing or new patient data"),choices=c("Us
 conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
   wellPanel(
       selectizeInput("patient", h4("  Select Patient:"),
-                  choices = dput(MPNinput$id[which(MPNinput$ET==1)]),options=list(maxOptions=2000)  ) #### ATTN!  Need to figure out how this part works!!!!!!
+                  choices = dput(MPNinput$id[which(MPNinput$ET==1)]),options=list(maxOptions=2000)  ) ## Attn!
 )),
       
       ##Input own data
@@ -54,7 +54,7 @@ numericInput("Pl",
  fluidRow(
 column(3,offset=0.5,radioButtons("Sex", label = h6("Gender"),
        choices = list("Female" = 1, "Male" = 2,
-                       "Unknown" = NA), selected = "NA")), #in all cases down - changed selecte values from NA to "NA", since NA does not work in my local env
+                       "Unknown" = NA), selected = "NA")), 
 column(3,offset=0.5,radioButtons("PriorThrom", label = h6("Prior thrombosis"),
        choices = list("No" = 0, "Yes" = 1,
                        "Unknown" = NA),selected = "NA")),
@@ -291,7 +291,7 @@ textOutput("Demographics")
            
 fluidRow(     
   column(9,style="padding:0px", plotOutput("msplot")), 
-  column(3, style="padding:3px", img (src="Legend_key_new.png", height = 330, width = 125)) #image has to be in /www, bit the path without www!
+  column(3, style="padding:3px", img (src="Legend_key_new.png", height = 330, width = 125)) #image has to be in /www, but the path without www!
   ),
            
 

@@ -1,6 +1,6 @@
 ### This version is deployed as Ver 1.1.0.
 
-#### NB!! As is 24.07.2020 there is still a bug with report generation and patient ID! See sxls file for details!
+
 library(shiny)
 library(xtable)
 library(RColorBrewer)
@@ -84,7 +84,7 @@ colnames(A)<-c("Diagnosis","Gene","Percentage"); ggplot(A,aes(x=Diagnosis,y=Perc
 
 
 observe({
-datasetInput<-reactive({switch(input$dataset, #conceptually datasetInput==MPNinput
+datasetInput<-reactive({switch(input$dataset, 
            "Essential Thrombocytosis (n=1244)" = MPNinput[which(MPNinput$ET==1),],
            "Polycythemia Vera (n=312)" = MPNinput[which(MPNinput$PV==1),],
            "Primary/Secondary Myelofibrosis (n=276)" = MPNinput[which(MPNinput$MF==1),],
