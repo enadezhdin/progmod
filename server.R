@@ -90,7 +90,7 @@ datasetInput<-reactive({switch(input$dataset,
            "Primary/Secondary Myelofibrosis (n=276)" = MPNinput[which(MPNinput$MF==1),],
            "Other MPN (n=43)" = MPNinput[which(MPNinput$ET==0&MPNinput$PV==0&MPNinput$MF==0),])})
 #Make patient list specific to chosen diagnosis:
-updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())]) #this responds to changes in initial diagnosis input
+updateSelectInput(session, "patient",choices=dput(datasetInput()$id)[2:nrow(datasetInput())]) #responds to changes in initial diagnosis input
 PID<-reactive({input$patient})  #PID is not isolated!
 
 
@@ -248,7 +248,7 @@ paste0("Mean number of mutations in patients with ",input$Gene2,": ",round(mean(
 
 
 values<-reactiveValues(val=NULL)
-observeEvent(input$update,{  ### this triggers the update
+observeEvent(input$update,{  
 values$val<-datasetInput()[PNO(),1:71] 
 if(input$newdata=="Input new patient data"){ 
 values$val$Belfast <- NA
@@ -355,11 +355,11 @@ demogr_react <- reactive({paste0("Age: ",round(values$val$Age*10),". Gender: ",G
 mutlist_react <- reactive(Genes_list[which (values$val[1, c(1:55),drop=FALSE]!=0)])
 
 ### define report format
-reactive_report_format <- reactive(input$report_format)
+#reactive_report_format <- reactive(input$report_format)
 
 
 
-face_image_var <- list("www/Face_fig_s.png")
+#face_image_var <- list("www/Face_fig_s.png")
 
 
 #### ATTN!
@@ -371,7 +371,7 @@ output$msplot <- renderImage({list(src = "www/Face_fig_s.png")}, deleteFile = FA
 
 observeEvent(input$update,{
 
-output$medianEFS<-
+#output$medianEFS<-
 output$msplot<-
 renderPlot({
   par(bty="L", xaxs="i",yaxs="i", mar=c(5,5,1,1))

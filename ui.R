@@ -25,7 +25,7 @@ selectInput("newdata",label=h4("Use existing or new patient data"),choices=c("Us
 conditionalPanel(condition = 'input.newdata=="Use existing patient data"',
   wellPanel(
       selectizeInput("patient", h4("  Select Patient:"),
-                  choices = dput(MPNinput$id[which(MPNinput$ET==1)]),options=list(maxOptions=2000)  ) ## Attn!
+                  choices = dput(MPNinput$id[which(MPNinput$ET==1)]),options=list(maxOptions=2000)  )
 )),
       
       ##Input own data
@@ -196,7 +196,7 @@ column(3,offset=0.5,radioButtons("Splen", label = h6("Splenomegaly"),
       fluidRow(                                                                  ## RB1 added to the selection list
         column(3,radioButtons("RB1", label = h6("RB1"),
                         choices = list("Present" = 1, "Absent" = 0,
-                                       "Unknown" = NA),selected = "NA")),
+                                       "Unknown" = NA),selected = "NA"))#
 
   ),
 
@@ -310,8 +310,8 @@ wellPanel(style = "padding:20px; max-height: 150px",
            radioButtons(inputId="report_format", label = h5("Select report format"),
                          choices = list("HTML" = 'html_document', "Presentation" = 'powerpoint_presentation'), selected = 'html_document')),
            column (3, offset = 0,
-              downloadButton("report", "Generate report"),
-             ),
+              downloadButton("report", "Generate report")#
+             )#
 )
 )
 ),
